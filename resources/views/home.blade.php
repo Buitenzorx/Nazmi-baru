@@ -16,7 +16,7 @@
         
         <!-- Peta -->
         <div style="text-align: center; margin-bottom: 20px;">
-            <img src="{{ asset('Nazmi-baru/public/img/Peta.png') }}" alt="Peta Lokasi PAM SIMAS SAGARA" style="width: 350px;">
+            <img src="{{ asset('Nazmi-baru/public/img/Peta.jpeg') }}" alt="Peta Lokasi PAM SIMAS SAGARA" style="width: 350px;">
         </div>
         
         <!-- Alamat -->
