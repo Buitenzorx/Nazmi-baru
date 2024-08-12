@@ -57,6 +57,6 @@ class User extends Authenticatable
 
     public function isCustomer()
     {
-        return $this->role && $this->email;
+        return $this->email;
     }
 }
