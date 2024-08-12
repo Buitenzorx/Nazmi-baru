@@ -71,35 +71,35 @@ class WaterLevelController extends Controller
     public function history(Request $request)
     {
         $query = WaterLevel::orderBy('created_at', 'desc');
-    
+
         // Apply filters if provided
         if ($request->has('date') && $request->input('date')) {
             $date = Carbon::parse($request->input('date'))->format('Y-m-d');
             $query->whereDate('created_at', $date);
         }
-    
+
         if ($request->has('start_time') && $request->input('start_time')) {
             $startTime = Carbon::parse($request->input('start_time'))->format('H:i:s');
             $query->whereTime('created_at', '>=', $startTime);
         }
-    
+
         if ($request->has('end_time') && $request->input('end_time')) {
             $endTime = Carbon::parse($request->input('end_time'))->format('H:i:s');
             $query->whereTime('created_at', '<=', $endTime);
         }
-    
+
         if ($request->has('time') && $request->input('time')) {
             $time = $request->input('time');
             $query->whereTime('created_at', '=', $time);
         }
-    
+
         $allLevels = $query->get();
-    
+
         // Transform all levels to include additional fields
         $allLevels->transform(function ($waterLevel, $key) {
             $ketinggianAir = 84 - $waterLevel->level; // Menghitung ketinggian air
             $volume = $this->calculateVolume($ketinggianAir); // Menghitung volume
-    
+
             $waterLevel->no = $key + 1;
             $waterLevel->tanggal = Carbon::parse($waterLevel->created_at)->format('Y-m-d');
             $waterLevel->waktu = Carbon::parse($waterLevel->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
@@ -108,21 +108,21 @@ class WaterLevelController extends Controller
             $waterLevel->status = $this->getLevelStatus($waterLevel->level);
             return $waterLevel;
         });
-    
+
         // Take first 10 for display (latest first)
         $displayedLevels = $allLevels->take(10);
-    
+
         return view('history', [
             'displayedLevels' => $displayedLevels,
             'allLevels' => $allLevels
         ]);
     }
-    
+
 
     private function getLevelStatus($level)
     {
         $maxHeight = 84; // Tinggi maksimum sumur dalam meter
-    
+
         if ($level < 0.40 * $maxHeight) {
             return "AMAN"; // H < 33.6 meter
         } elseif ($level < 0.60 * $maxHeight) {
@@ -133,12 +133,12 @@ class WaterLevelController extends Controller
             return "RUSAK"; // H ≥ 67.2 meter
         }
     }
-    
+
     private function checkAndSendNotification($waterLevel)
     {
         $level = $waterLevel->level;
         $maxHeight = 84; // Tinggi maksimum sumur dalam meter
-    
+
         if ($level >= 0.60 * $maxHeight && $level < 0.80 * $maxHeight) {
             // Notifikasi untuk level KRITIS
             $message = "[PERHATIAN] Ketinggian Air Kritis\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
@@ -203,82 +203,87 @@ class WaterLevelController extends Controller
         }
     }
     public function downloadReport(Request $request)
-{
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-    if (!$startDate || !$endDate) {
-        return redirect()->back()->withErrors('Please provide both start and end dates.');
-    }
-
-    $startDate = Carbon::parse($startDate)->startOfDay();
-    $endDate = Carbon::parse($endDate)->endOfDay();
-
-    $data = WaterLevel::whereBetween('created_at', [$startDate, $endDate])
-        ->orderBy('created_at', 'asc')
-        ->get();
-
-    $fileName = 'report-' . Carbon::now()->format('Y-m-d') . '.csv';
-
-    $headers = [
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => "attachment; filename=\"$fileName\"",
-    ];
-
-    $columns = ['No', 'Tanggal', 'Waktu', 'Jarak', 'Status'];
-
-    $callback = function() use ($data, $columns) {
-        $file = fopen('php://output', 'w');
-        fputcsv($file, $columns);
-
-        foreach ($data as $index => $record) {
-            $row = [
-                $index + 1,
-                Carbon::parse($record->created_at)->format('Y-m-d'),
-                Carbon::parse($record->created_at)->format('H:i:s'),
-                $record->level . ' Meter',
-                $this->getLevelStatus($record->level),
-            ];
-            fputcsv($file, $row);
+        if (!$startDate || !$endDate) {
+            return redirect()->back()->withErrors('Please provide both start and end dates.');
         }
 
-        fclose($file);
-    };
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
 
-    return response()->stream($callback, 200, $headers);
-}
-public function getChartData(Request $request)
-{
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+        $data = WaterLevel::whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'asc')
+            ->get();
 
-    if (!$startDate || !$endDate) {
-        return response()->json(['error' => 'Please provide both start and end dates.'], 400);
+        $fileName = 'report-' . Carbon::now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$fileName\"",
+        ];
+
+        $columns = ['No', 'Tanggal', 'Waktu', 'Jarak', 'Ketinggian Air', 'Volume', 'Status'];
+
+        $callback = function () use ($data, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($data as $index => $record) {
+                $ketinggianAir = 84 - $record->level; // Calculate water level
+                $volume = $this->calculateVolume($ketinggianAir); // Calculate volume
+
+                $row = [
+                    $index + 1,
+                    Carbon::parse($record->created_at)->format('Y-m-d'),
+                    Carbon::parse($record->created_at)->format('H:i:s'),
+                    $record->level . ' Meter',
+                    $ketinggianAir . ' Meter',
+                    $volume . ' Liter',
+                    $this->getLevelStatus($record->level),
+                ];
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
+    public function getChartData(Request $request)
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-    $startDate = Carbon::parse($startDate)->startOfDay();
-    $endDate = Carbon::parse($endDate)->endOfDay();
+        if (!$startDate || !$endDate) {
+            return response()->json(['error' => 'Please provide both start and end dates.'], 400);
+        }
 
-    $data = WaterLevel::select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(level) as average_level'))
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->groupBy(DB::raw('DATE(created_at)'))
-        ->orderBy('date')
-        ->get()
-        ->map(function ($item) {
-            return [
-                'date' => Carbon::parse($item->date)->format('Y-m-d'),
-                'average_level' => $item->average_level,
-            ];
-        });
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
 
-    return response()->json($data);
-}
-private function calculateVolume($height)
-{
-    $radius = 0.0825; // 82.5 mm diubah menjadi meter
-    $volumeInCubicMeters = pi() * pow($radius, 2) * $height; // Volume dalam meter kubik
-    $volumeInLiters = $volumeInCubicMeters * 1000; // Ubah ke liter
-    return $volumeInLiters;
-}
+        $data = WaterLevel::select(DB::raw('DATE(created_at) as date'), DB::raw('AVG(level) as average_level'))
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy('date')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'date' => Carbon::parse($item->date)->format('Y-m-d'),
+                    'average_level' => $item->average_level,
+                ];
+            });
+
+        return response()->json($data);
+    }
+    private function calculateVolume($height)
+    {
+        $radius = 0.0825; // 82.5 mm diubah menjadi meter
+        $volumeInCubicMeters = pi() * pow($radius, 2) * $height; // Volume dalam meter kubik
+        $volumeInLiters = $volumeInCubicMeters * 1000; // Ubah ke liter
+        return $volumeInLiters;
+    }
 
 }
