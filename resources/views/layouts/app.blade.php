@@ -80,11 +80,13 @@
                         </li>
                     @endif
                 @endauth
-                @if (Auth::user()->isAdmin() || Auth::user()->isCustomer())
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('contact') }}">Layanan</a>
-                    </li>
-                @endif
+                @auth
+                    @if (Auth::user()->isAdmin() || Auth::user()->isCustomer())
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('contact') }}">Layanan</a>
+                        </li>
+                    @endif
+                @endauth
                 @guest
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('login') }}">Login</a>
