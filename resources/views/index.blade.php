@@ -145,7 +145,7 @@
             // Function to update the chart
             function updateChart(data) {
                 var time = new Date().toLocaleTimeString();
-                var level = data.level;
+                var level = (84 - data.level);
 
                 if (waterLevelChart.data.labels.length >= 15) { // Limit data points to 15
                     waterLevelChart.data.labels.shift();
