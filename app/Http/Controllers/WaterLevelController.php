@@ -121,7 +121,7 @@ class WaterLevelController extends Controller
 
     private function getLevelStatus($level)
     {
-        $maxHeight = 84; // Tinggi maksimum sumur dalam meter
+        $maxHeight = 1; // Tinggi maksimum sumur dalam meter
 
         if ($level < 0.40 * $maxHeight) {
             return "AMAN"; // H < 33.6 meter
@@ -137,7 +137,7 @@ class WaterLevelController extends Controller
     private function checkAndSendNotification($waterLevel)
     {
         $level = $waterLevel->level;
-        $maxHeight = 84; // Tinggi maksimum sumur dalam meter
+        $maxHeight = 1; // Tinggi maksimum sumur dalam meter
 
         if ($level >= 0.60 * $maxHeight && $level < 0.80 * $maxHeight) {
             // Notifikasi untuk level KRITIS
