@@ -97,7 +97,7 @@ class WaterLevelController extends Controller
 
         // Transform all levels to include additional fields
         $allLevels->transform(function ($waterLevel, $key) {
-            $ketinggianAir = 84 - $waterLevel->level; // Menghitung ketinggian air
+            $ketinggianAir = 1 - $waterLevel->level; // Menghitung ketinggian air
             $volume = $this->calculateVolume($ketinggianAir); // Menghitung volume
 
             $waterLevel->no = $key + 1;
@@ -232,7 +232,7 @@ class WaterLevelController extends Controller
             fputcsv($file, $columns);
 
             foreach ($data as $index => $record) {
-                $ketinggianAir = 84 - $record->level; // Calculate water level
+                $ketinggianAir = 1 - $record->level; // Calculate water level
                 $volume = $this->calculateVolume($ketinggianAir); // Calculate volume
 
                 $row = [
