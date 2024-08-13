@@ -138,7 +138,7 @@
                                     labels: data.map(item => item.date), // Display dates on x-axis
                                     datasets: [{
                                         label: 'Ketinggian Air',
-                                        data: data.map(item => 84 - item.average_level), // Calculate water level (84 - average distance)
+                                        data: data.map(item => 1 - item.average_level), // Calculate water level (84 - average distance)
                                         borderColor: 'rgba(75, 192, 192, 1)',
                                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                     }]

@@ -126,8 +126,8 @@
                 $.getJSON("api/water-level", function(data) {
                     if (lastValue !== data.level) {
                         $("#nilai_jarak").text(data.level);
-                        $("#ketinggian_air").text(84 - data.level);
-                        $("#volume_air").text(calculateVolume(84 - data.level));
+                        $("#ketinggian_air").text(1 - data.level);
+                        $("#volume_air").text(calculateVolume(1 - data.level));
                         $("#STATUS-JARAK").text(data.status);
                         lastValue = data.level;
                         updateChart(data);
