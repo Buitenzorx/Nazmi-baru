@@ -4,9 +4,8 @@
 
 @section('content')
     <div class="container" style="margin-top: 20px;">
-        <div class="card" style="margin-bottom: 40px">
-            <div class="card-header"
-                style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
+        <div class="card" style="margin-bottom: 40px;">
+            <div class="card-header" style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
                 <h3>Data History</h3>
             </div>
 
@@ -14,22 +13,20 @@
                 <!-- Search Form -->
                 <div class="card text-dark bg-light mb-3" style="margin-top: 5px;">
                     <form method="GET" action="{{ route('history') }}" class="mb-3">
-                        <div class="row" style="margin-left: 5px; margin-bottom: 5px">
+                        <div class="row" style="margin-left: 5px; margin-bottom: 5px;">
                             <div class="col-md-3 mt-3">
                                 <input type="date" name="date" class="form-control" value="{{ request('date') }}">
                                 Date
                             </div>
-                            <div class="col-md-3  mt-3">
-                                <input type="time" name="start_time" class="form-control"
-                                    value="{{ request('start_time') }}" step="1">
+                            <div class="col-md-3 mt-3">
+                                <input type="time" name="start_time" class="form-control" value="{{ request('start_time') }}" step="1">
                                 Start Time
                             </div>
-                            <div class="col-md-3  mt-3">
-                                <input type="time" name="end_time" class="form-control" value="{{ request('end_time') }}"
-                                    step="1">
+                            <div class="col-md-3 mt-3">
+                                <input type="time" name="end_time" class="form-control" value="{{ request('end_time') }}" step="1">
                                 End Time
                             </div>
-                            <div class="col-md-1  mt-3">
+                            <div class="col-md-1 mt-3">
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </div>
                         </div>
@@ -37,8 +34,7 @@
                 </div>
 
                 <!-- Show all data in scrollable table -->
-                <div id="all-data-scrollable"
-                    style="overflow-y: auto; max-height: 400px; display: block; margin-top: 20px;">
+                <div id="all-data-scrollable" style="overflow-y: auto; max-height: 400px; display: block; margin-top: 20px;">
                     <table class="table table-bordered table-striped mt-2">
                         <thead class="thead-dark">
                             <tr>
@@ -65,29 +61,27 @@
                             @endforeach
                         </tbody>
                     </table>
-
                 </div>
+                
+                <!-- Download Report and Generate Chart -->
                 <div class="col-md-12 mt-3">
                     <div class="card text-dark bg-light mb-3">
                         <div class="card-body">
                             <form method="GET" action="{{ route('downloadReport') }}" class="mb-3">
                                 <div class="row">
                                     <div class="col-md-3">
-                                        <input type="date" name="start_date" class="form-control"
-                                            placeholder="Start Date" required>
+                                        <input type="date" name="start_date" class="form-control" placeholder="Start Date" required>
                                         Start Date
                                     </div>
                                     <div class="col-md-3">
-                                        <input type="date" name="end_date" class="form-control" placeholder="End Date"
-                                            required>
+                                        <input type="date" name="end_date" class="form-control" placeholder="End Date" required>
                                         End Date
                                     </div>
                                     <div class="col-md-3">
                                         <button type="submit" class="btn btn-info">Download Report .csv</button>
                                     </div>
                                     <div class="col-md-2">
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#chartModal">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#chartModal">
                                             Generate Chart
                                         </button>
                                     </div>
@@ -144,7 +138,7 @@
                                     labels: data.map(item => item.date), // Display dates on x-axis
                                     datasets: [{
                                         label: 'Ketinggian Air',
-                                        data: data.map(item => 84 - item.level), // Calculate water level (84 - distance)
+                                        data: data.map(item => 84 - item.average_level), // Calculate water level (84 - average distance)
                                         borderColor: 'rgba(75, 192, 192, 1)',
                                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                     }]
@@ -174,8 +168,7 @@
                 }
             };
 
-            document.querySelector('.btn-primary[data-bs-target="#chartModal"]').addEventListener('click',
-                generateChart);
+            document.querySelector('.btn-primary[data-bs-target="#chartModal"]').addEventListener('click', generateChart);
         });
     </script>
 @endsection
