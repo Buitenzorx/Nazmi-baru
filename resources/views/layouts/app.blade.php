@@ -7,6 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('APP_NAME', 'Monitoring Ketinggian Air Sumur') }}</title>
+    <link rel="stylesheet" href="path/to/fancy-form.css">
+    <script src="path/to/fancy-form.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -80,24 +82,30 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/dashboard"><i class="fa-solid fa-chart-line"></i> Monitoring</a>
                     </li>
+
                     @auth
-                        @if (Auth::user()->isAdmin())
+                        @if (Auth::user()->role_id == 1)
+                            <!-- Admin Sidebar Items -->
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('history') }}"><i class="fa-solid fa-book"></i> Riwayat</a>
+                                <a class="nav-link" href="{{ route('history') }}"><i class="fa-solid fa-book"></i>
+                                    Riwayat</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('users') }}"><i class="fa-solid fa-user"></i> Users</a>
                             </li>
-                        @endif
-                    @endauth
-                    @auth
-                        @if (Auth::user()->isAdmin() || Auth::user()->isCustomer())
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('contact') }}"><i class="fa-solid fa-phone"></i> Layanan</a>
+                                <a class="nav-link" href="{{ route('log-layanan') }}"><i class="fa-solid fa-phone"></i>
+                                    Log Layanan</a>
                             </li>
-                            
+                        @elseif (Auth::user()->role_id == 2)
+                            <!-- Customer Sidebar Items -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('contact') }}"><i class="fa-solid fa-phone"></i>
+                                    Layanan</a>
+                            </li>
                         @endif
                     @endauth
+
                     @guest
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('login') }}"><i class="fa-solid fa-right-to-bracket"></i>
@@ -121,6 +129,7 @@
             </div>
         </nav>
     </div>
+
 
     <div class="content">
         <nav aria-label="breadcrumb"

@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\WaterLevelController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\LayananController;
 Route::get('/users', [UserController::class, 'index'])->name('users');
 
 
@@ -39,6 +39,9 @@ Route::get('/api/water-level-data', [WaterLevelController::class, 'getWaterLevel
 Route::get('/download-report', [WaterLevelController::class, 'downloadReport'])->name('downloadReport');
 Route::get('/get-chart-data', [WaterLevelController::class, 'getChartData'])->name('getChartData');
 Route::get('/search-by-status', [WaterLevelController::class, 'searchByStatus'])->name('searchByStatus');
+Route::post('/services/submit', [LayananController::class, 'submit'])->name('layanan.submit');
+Route::get('/log-layanan', [LayananController::class, 'index'])->name('log-layanan');
+
 
 // Require authentication routes
 require __DIR__ . '/auth.php';
