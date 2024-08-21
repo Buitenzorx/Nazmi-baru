@@ -10,8 +10,10 @@ class CreateWaterLevelsTable extends Migration
     {
         Schema::create('water_levels', function (Blueprint $table) {
             $table->id();
-            $table->float('level'); // To store water level
-            $table->timestamps();
+            $table->float('level'); // Menyimpan level air
+            $table->float('ph_air'); // Menyimpan pH air
+            $table->float('kekeruhan_air'); // Menyimpan kekeruhan air
+            $table->timestamps(); // Waktu pembuatan dan pembaruan data
         });
     }
 

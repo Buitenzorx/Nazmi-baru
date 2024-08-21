@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Controllers\WaterLevelController;
+use App\Http\Controllers\UserController;
+
+Route::get('/users', [UserController::class, 'index'])->name('users');
+
 
 // Route untuk halaman dashboard
 Route::get('/dashboard', [WaterLevelController::class, 'index'])->name('dashboard');
@@ -34,6 +38,7 @@ Route::middleware(['auth', RoleMiddleware::class . ':Admin'])->group(function ()
 Route::get('/api/water-level-data', [WaterLevelController::class, 'getWaterLevelData']);
 Route::get('/download-report', [WaterLevelController::class, 'downloadReport'])->name('downloadReport');
 Route::get('/get-chart-data', [WaterLevelController::class, 'getChartData'])->name('getChartData');
+Route::get('/search-by-status', [WaterLevelController::class, 'searchByStatus'])->name('searchByStatus');
 
 // Require authentication routes
 require __DIR__ . '/auth.php';

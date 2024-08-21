@@ -5,18 +5,21 @@
 @section('content')
     <div class="container" style="text-align: center; margin-top: 10px;">
         <!-- Logo and Description -->
-        <img src="{{ asset('Nazmi-baru/public/img/logo-kpspams.png') }}" style="width: 120px;">
+        <img src="{{ asset('img/logo-kpspams.png') }}" style="width: 120px;">
         <p style="font-size: 50px; font-weight: bold; color: white;">PAM SIMAS SAGARA</p>
-        <p style="font-size: 20px; font-weight: bold; color: white;">-DESA SINDANGKERTA, KECAMATAN SINDANGKERTA, KABUPATEN BANDUNG BARAT, JAWA BARAT-</p>
+        <p style="font-size: 20px; font-weight: bold; color: white;">-DESA SINDANGKERTA, KECAMATAN SINDANGKERTA, KABUPATEN
+            BANDUNG BARAT, JAWA BARAT-</p>
 
-        <div class="row">
+        <div class="row" style="margin-left: -50px;">
             <!-- Nilai Jarak -->
             <div class="col-md-3">
-                <div class="card mb-3" style="height: 200px;">
-                    <div class="card-header" style="font-size: 20px; font-weight: bold; background-color: cornflowerblue; color: white;">
-                        <h3>Nilai Jarak</h3>
+                <div class="card mb-3" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>Nilai Jarak</h4>
                     </div>
-                    <div class="card-body" style="font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                    <div class="card-body"
+                        style="font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
                         <h1><span id="nilai_jarak">0</span> m</h1>
                     </div>
                 </div>
@@ -24,11 +27,13 @@
 
             <!-- Ketinggian Air -->
             <div class="col-md-3">
-                <div class="card mb-3" style="height: 200px;">
-                    <div class="card-header" style="font-size: 20px; font-weight: bold; background-color: cornflowerblue; color: white;">
-                        <h3>Ketinggian Air Sumur</h3>
+                <div class="card mb-3" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>Ketinggian Air Sumur</h4>
                     </div>
-                    <div class="card-body" style="font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                    <div class="card-body"
+                        style="font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
                         <h1><span id="ketinggian_air">0</span> m</h1>
                     </div>
                 </div>
@@ -36,11 +41,13 @@
 
             <!-- Volume Air -->
             <div class="col-md-3">
-                <div class="card mb-3" style="height: 200px;">
-                    <div class="card-header" style="font-size: 20px; font-weight: bold; background-color: cornflowerblue; color: white;">
-                        <h3>Volume Air Sumur</h3>
+                <div class="card mb-3" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>Volume Air Sumur</h4>
                     </div>
-                    <div class="card-body" style="font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                    <div class="card-body"
+                        style="font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
                         <h1><span id="volume_air">0</span> L</h1>
                     </div>
                 </div>
@@ -48,30 +55,80 @@
 
             <!-- Status -->
             <div class="col-md-3">
-                <div class="card" style="height: 200px;">
-                    <div class="card-header" style="font-size: 20px; font-weight: bold; background-color: cornflowerblue; color: white;">
-                        <h3>Status Sumur</h3>
+                <div class="card mb-3" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>Status Sumur</h4>
                     </div>
-                    <div class="card-body" style="font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                    <div class="card-body"
+                        style="font-size: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
                         <h1 id="STATUS-JARAK">-</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TDS Air -->
+            <div class="col-md-3">
+                <div class="card mb-3" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>TDS Air Sumur</h4>
+                    </div>
+                    <div class="card-body"
+                        style="font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <h1><span id="kekeruhan_air">0</span> PPM</h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- pH Air -->
+            <div class="col-md-3">
+                <div class="card mb-3" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>pH Air Sumur</h4>
+                    </div>
+                    <div class="card-body"
+                        style="font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <h1><span id="ph_air">0</span></h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Usability -->
+            <div class="col-md-6">
+                <div class="card mb-6" style="height: 150px;">
+                    <div class="card-header"
+                        style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h4>Kualitas Air</h4>
+                    </div>
+                    <div class="card-body"
+                        style="font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
+                        <h1 id="water_quality_status">-</h1>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row" style="margin-bottom:200px">
+        <div class="row" style="margin-bottom:200px; margin-left:-50px">
             <!-- Grafik -->
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header" style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                    <div class="card-header"
+                        style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
                         <h3>Ketinggian Air Sumur</h3>
                     </div>
+
                     <div class="card-body">
                         <canvas id="waterLevelChart"></canvas>
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -126,11 +183,14 @@
                 $.getJSON("api/water-level", function(data) {
                     if (lastValue !== data.level) {
                         $("#nilai_jarak").text(data.level);
-                        $("#ketinggian_air").text(1 - data.level);
-                        $("#volume_air").text(calculateVolume(1 - data.level));
+                        $("#ketinggian_air").text(84 - data.level);
+                        $("#volume_air").text(calculateVolume(84 - data.level));
+                        $("#kekeruhan_air").text(data.kekeruhan_air); // Update kekeruhan air
+                        $("#ph_air").text(data.ph_air); // Update pH air
                         $("#STATUS-JARAK").text(data.status);
                         lastValue = data.level;
                         updateChart(data);
+                        updateWaterQuality(data.ph_air, data.kekeruhan_air);
                     }
                 });
             }, 1000);
@@ -145,17 +205,33 @@
             // Function to update the chart
             function updateChart(data) {
                 var time = new Date().toLocaleTimeString();
-                var level = (1 - data.level);
+                var level = (84 - data.level);
 
-                if (waterLevelChart.data.labels.length >= 15) { // Limit data points to 15
+                if (waterLevelChart.data.labels.length > 10) {
                     waterLevelChart.data.labels.shift();
                     waterLevelChart.data.datasets[0].data.shift();
                 }
-
                 waterLevelChart.data.labels.push(time);
                 waterLevelChart.data.datasets[0].data.push(level);
+
                 waterLevelChart.update();
             }
+
+            // Function to update water quality status
+            // Function to update water quality status
+            function updateWaterQuality(ph_air, kekeruhan_air) {
+                let status = "Layak Minum";
+
+                // Kondisi logika yang diperbaiki
+                if (kekeruhan_air >= 50 && kekeruhan_air <= 300 && ph_air >= 6.5 && ph_air <= 8.5 ) {
+                    status = "Layak Minum";
+                } else {
+                    status = "Tidak Layak Minum";
+                }
+
+                $("#water_quality_status").text(status);
+            }
+
         });
     </script>
 @endsection

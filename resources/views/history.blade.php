@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container" style="margin-top: 20px;">
-        <div class="card" style="margin-bottom: 40px;">
+        <div class="card" style="margin-bottom: 40px;margin-left: -50px">
             <div class="card-header" style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
                 <h3>Data History</h3>
             </div>
@@ -13,19 +13,30 @@
                 <!-- Search Form -->
                 <div class="card text-dark bg-light mb-3" style="margin-top: 5px;">
                     <form method="GET" action="{{ route('history') }}" class="mb-3">
-                        <div class="row" style="margin-left: 5px; margin-bottom: 5px;">
-                            <div class="col-md-3 mt-3">
+                        <div class="row" style="margin-left: 2px; margin-bottom: 5px;">
+                            <div class="col-md-4 mt-3">
                                 <input type="date" name="date" class="form-control" value="{{ request('date') }}">
                                 Date
                             </div>
-                            <div class="col-md-3 mt-3">
+                            <div class="col-md-2 mt-3">
                                 <input type="time" name="start_time" class="form-control" value="{{ request('start_time') }}" step="1">
                                 Start Time
                             </div>
-                            <div class="col-md-3 mt-3">
+                            <div class="col-md-2 mt-3">
                                 <input type="time" name="end_time" class="form-control" value="{{ request('end_time') }}" step="1">
                                 End Time
                             </div>
+                            <div class="col-md-2 mt-3">
+                                <select name="status" class="form-control">
+                                    <option value="">All</option>
+                                    <option value="AMAN" {{ request('status') == 'AMAN' ? 'selected' : '' }}>AMAN</option>
+                                    <option value="RAWAN" {{ request('status') == 'RAWAN' ? 'selected' : '' }}>RAWAN</option>
+                                    <option value="KRITIS" {{ request('status') == 'KRITIS' ? 'selected' : '' }}>KRITIS</option>
+                                    <option value="RUSAK" {{ request('status') == 'RUSAK' ? 'selected' : '' }}>RUSAK</option>
+                                </select>
+                                Status
+                            </div>
+                            
                             <div class="col-md-1 mt-3">
                                 <button type="submit" class="btn btn-primary">Search</button>
                             </div>
@@ -44,19 +55,23 @@
                                 <th>Jarak</th>
                                 <th>Ketinggian Air</th>
                                 <th>Volume</th>
+                                <th>Ph Air</th>
+                                <th>Kekeruhan Air   </th>
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tableBody">
                             @foreach ($allLevels as $waterLevel)
                                 <tr>
-                                    <td>{{ $waterLevel->no }}</td>
+                                    <td>{{ $loop->iteration }}</td>
                                     <td>{{ $waterLevel->tanggal }}</td>
                                     <td>{{ $waterLevel->waktu }}</td>
                                     <td>{{ $waterLevel->level }} Meter</td>
                                     <td>{{ $waterLevel->ketinggian_air }} Meter</td>
                                     <td>{{ $waterLevel->volume }} Liter</td>
-                                    <td>{{ $waterLevel->status }}</td>
+                                    <td>{{ $waterLevel->ph_air }}</td>
+                                    <td>{{ $waterLevel->kekeruhan_air}} PPM</td>
+                                    <td class="status">{{ $waterLevel->status }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -113,6 +128,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let chartInstance = null;
@@ -138,7 +154,7 @@
                                     labels: data.map(item => item.date), // Display dates on x-axis
                                     datasets: [{
                                         label: 'Ketinggian Air',
-                                        data: data.map(item => 1 - item.average_level), // Calculate water level (84 - average distance)
+                                        data: data.map(item => 84 - item.average_level), // Calculate water level (84 - average distance)
                                         borderColor: 'rgba(75, 192, 192, 1)',
                                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                                     }]
@@ -169,6 +185,7 @@
             };
 
             document.querySelector('.btn-primary[data-bs-target="#chartModal"]').addEventListener('click', generateChart);
+
         });
     </script>
 @endsection
