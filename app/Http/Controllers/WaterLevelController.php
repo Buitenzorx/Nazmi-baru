@@ -301,7 +301,7 @@ class WaterLevelController extends Controller
     }
     private function calculateVolume($height)
     {
-        $radius = 0.135; // 82.5 mm diubah menjadi meter
+        $radius = 0.0675; // 82.5 mm diubah menjadi meter
         $volumeInCubicMeters =  3.141592653589793 * pow($radius, 2) * $height; // Volume dalam meter kubik
         $volumeInLiters = $volumeInCubicMeters * 1000; // Ubah ke liter
         return $volumeInLiters;
