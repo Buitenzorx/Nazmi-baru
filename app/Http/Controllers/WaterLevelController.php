@@ -387,5 +387,17 @@ class WaterLevelController extends Controller
         return view('history', compact('allLevels'));
     }
 
+    public function getLatestData()
+    {
+        $latestLevel = WaterLevel::latest()->first();
+        $latestQuality = WaterQuality::latest()->first();
 
+        return response()->json([
+            'level' => $latestLevel->level ?? null,
+            'ph_air' => $latestQuality->ph_air ?? null,
+            'kekeruhan_air' => $latestQuality->kekeruhan_air ?? null,
+            'status' => $this->getLevelStatus($latestLevel->level ?? null),
+            'timestamp' => Carbon::now('Asia/Jakarta')->toDateTimeString(),
+        ]);
+    }
 }
