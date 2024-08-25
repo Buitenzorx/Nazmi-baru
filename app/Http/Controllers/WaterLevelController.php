@@ -252,19 +252,11 @@ class WaterLevelController extends Controller
         $kekeruhanStatus = ($kekeruhan_air <= $standardKekeruhan) ? 'OK' : 'Not OK';
 
         if ($phStatus === 'Not OK' || $kekeruhanStatus === 'Not OK') {
-            $message = sprintf(
-                "*[PERHATIAN] Kualitas Air Tidak Sesuai dengan Standar*\n--------------------------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKualitas air tidak sesuai dengan standar:\n- pH = %s\n- Kekeruhan air = %s NTU\n\nMohon segera cek kondisi air untuk memastikan kualitas tetap sesuai standar.\n\nTerima kasih.",
-                $ph_air,
-                $kekeruhan_air
-            );
-
-            \Log::info('Notification Message: ' . $message); // Log the message to check values
+            $message = "*[PERHATIAN] Kualitas Air Tidak Sesuai dengan Standar*\n--------------------------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKualitas air tidak sesuai dengan standar:\n- pH = {$ph_air}\n- Kekeruhan air = {$kekeruhan_air} NTU\n\nMohon segera cek kondisi air untuk memastikan kualitas tetap sesuai standar.\n\nTerima kasih.";
 
             $this->sendNotificationMultipleTimes($message, 1);
         }
     }
-
-
     private function checkAndSendNotification($waterLevel)
     {
         $level = $waterLevel->level;
