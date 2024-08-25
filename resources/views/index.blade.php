@@ -186,7 +186,7 @@
 
             // Update data every second
             setInterval(function() {
-                $.getJSON("/Nazmi-baru/public/api/water-level-data", function(data) {
+                $.getJSON("api/water-level-data", function(data) {
                     if (lastValue !== data.level) {
                         $("#nilai_jarak").text(data.level);
                         $("#ketinggian_air").text(84 - data.level);
