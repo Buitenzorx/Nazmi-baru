@@ -1,16 +1,14 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWaterLevelsTable extends Migration
+class CreateWaterQualityTable extends Migration
 {
     public function up()
     {
-        Schema::create('water_levels', function (Blueprint $table) {
+        Schema::create('water_quality', function (Blueprint $table) {
             $table->id();
-            $table->float('level'); // Menyimpan level air
             $table->float('ph_air'); // Menyimpan pH air
             $table->float('kekeruhan_air'); // Menyimpan kekeruhan air
             $table->timestamps(); // Waktu pembuatan dan pembaruan data
@@ -19,6 +17,7 @@ class CreateWaterLevelsTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('water_levels');
+        Schema::dropIfExists('water_quality');
     }
 }
+

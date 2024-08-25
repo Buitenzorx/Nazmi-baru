@@ -70,7 +70,7 @@
                                     <td>{{ $waterLevel->ketinggian_air }} Meter</td>
                                     <td>{{ $waterLevel->volume }} Liter</td>
                                     <td>{{ $waterLevel->ph_air }}</td>
-                                    <td>{{ $waterLevel->kekeruhan_air}} PPM</td>
+                                    <td>{{ $waterLevel->kekeruhan_air}} NTU</td>
                                     <td class="status">{{ $waterLevel->status }}</td>
                                 </tr>
                             @endforeach

@@ -68,21 +68,21 @@
             </div>
 
             <!-- TDS Air -->
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="card mb-3" style="height: 150px;">
                     <div class="card-header"
                         style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
-                        <h4>TDS Air Sumur</h4>
+                        <h4>Kekeruhan Air Sumur</h4>
                     </div>
                     <div class="card-body"
                         style="font-size: 24px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
-                        <h1><span id="kekeruhan_air">0</span> PPM</h1>
+                        <h1><span id="kekeruhan_air">0</span> NTU</h1>
                     </div>
                 </div>
             </div>
 
             <!-- pH Air -->
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="card mb-3" style="height: 150px;">
                     <div class="card-header"
                         style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
@@ -95,7 +95,7 @@
                 </div>
             </div>
 
-            <!-- Water Usability -->
+            {{-- <!-- Water Usability -->
             <div class="col-md-6">
                 <div class="card mb-6" style="height: 150px;">
                     <div class="card-header"
@@ -107,7 +107,7 @@
                         <h1 id="water_quality_status">-</h1>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
         <div class="row" style="margin-bottom:200px; margin-left:-50px">
@@ -136,6 +136,7 @@
     <script>
         $(document).ready(function() {
             var lastValue = null;
+            var chartData = [];
 
             // Initialize the chart
             var ctx = document.getElementById('waterLevelChart').getContext('2d');
@@ -170,17 +171,22 @@
             });
 
             // Fetch the initial data
-            $.getJSON("api/water-level-data", function(data) {
-                data.forEach(function(entry) {
-                    waterLevelChart.data.labels.push(entry.time);
-                    waterLevelChart.data.datasets[0].data.push(entry.level);
+            function fetchData() {
+                $.getJSON("api/water-level-data", function(data) {
+                    chartData = data.chart_data; // Get the chart data from the API response
+                    chartData.forEach(function(entry) {
+                        waterLevelChart.data.labels.push(entry.time);
+                        waterLevelChart.data.datasets[0].data.push(entry.level);
+                    });
+                    waterLevelChart.update();
                 });
-                waterLevelChart.update();
-            });
+            }
+
+            fetchData();
 
             // Update data every second
             setInterval(function() {
-                $.getJSON("api/water-level", function(data) {
+                $.getJSON("api/water-level-data", function(data) {
                     if (lastValue !== data.level) {
                         $("#nilai_jarak").text(data.level);
                         $("#ketinggian_air").text(84 - data.level);
@@ -197,7 +203,7 @@
 
             // Function to calculate volume
             function calculateVolume(height) {
-                var radius = 0.0825; // 82.5 mm to meters
+                var radius = 0.075; // 82.5 mm to meters
                 var volume = Math.PI * Math.pow(radius, 2) * height; // Volume in cubic meters
                 return (volume * 1000).toFixed(2); // Convert to liters and format
             }
@@ -207,23 +213,39 @@
                 var time = new Date().toLocaleTimeString();
                 var level = (84 - data.level);
 
-                if (waterLevelChart.data.labels.length > 10) {
-                    waterLevelChart.data.labels.shift();
-                    waterLevelChart.data.datasets[0].data.shift();
+                chartData.push({
+                    time: time,
+                    level: level
+                });
+                if (chartData.length > 15) {
+                    chartData.shift();
                 }
-                waterLevelChart.data.labels.push(time);
-                waterLevelChart.data.datasets[0].data.push(level);
 
+                waterLevelChart.data.labels = chartData.map(function(entry) {
+                    return entry.time;
+                });
+                waterLevelChart.data.datasets[0].data = chartData.map(function(entry) {
+                    return entry.level;
+                });
                 waterLevelChart.update();
             }
 
             // Function to update water quality status
+            // Update water quality data every second
+            setInterval(function() {
+                $.getJSON("api/water-quality-data", function(data) {
+                    $("#ph_air").text(data.ph_air);
+                    $("#kekeruhan_air").text(data.kekeruhan_air);
+                    updateWaterQualityStatus(data.ph_air, data.kekeruhan_air);
+                });
+            }, 1000);
+
             // Function to update water quality status
-            function updateWaterQuality(ph_air, kekeruhan_air) {
+            function updateWaterQualityStatus(ph_air, kekeruhan_air) {
                 let status = "Layak Minum";
 
                 // Kondisi logika yang diperbaiki
-                if (kekeruhan_air >= 50 && kekeruhan_air <= 300 && ph_air >= 6.5 && ph_air <= 8.5 ) {
+                if (kekeruhan_air >= 50 && kekeruhan_air <= 300 && ph_air >= 6.5 && ph_air <= 8.5) {
                     status = "Layak Minum";
                 } else {
                     status = "Tidak Layak Minum";
@@ -231,7 +253,6 @@
 
                 $("#water_quality_status").text(status);
             }
-
         });
     </script>
 @endsection

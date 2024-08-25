@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\WaterLevel;
+use App\Models\WaterQuality;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -17,8 +18,9 @@ class WaterLevelController extends Controller
     public function getWaterLevel()
     {
         $latestWaterLevel = WaterLevel::latest()->first();
+        $latestWaterQuality = WaterQuality::latest()->first();
 
-        if (!$latestWaterLevel) {
+        if (!$latestWaterLevel || !$latestWaterQuality) {
             return response()->json([
                 'level' => null,
                 'ph_air' => null,
@@ -28,8 +30,8 @@ class WaterLevelController extends Controller
         }
 
         $level = $latestWaterLevel->level;
-        $ph_air = $latestWaterLevel->ph_air;
-        $kekeruhan_air = $latestWaterLevel->kekeruhan_air;
+        $ph_air = $latestWaterQuality->ph_air;
+        $kekeruhan_air = $latestWaterQuality->kekeruhan_air;
         $status = $this->getLevelStatus($level);
 
         return response()->json([
@@ -68,13 +70,81 @@ class WaterLevelController extends Controller
 
     public function getWaterLevelData()
     {
-        $waterLevels = WaterLevel::select('level', DB::raw('DATE_FORMAT(created_at, "%H:%i:%s") as time'))
+        $latestWaterLevel = WaterLevel::latest()->first();
+        $latestWaterQuality = WaterQuality::latest()->first();
+
+        if (!$latestWaterLevel || !$latestWaterQuality) {
+            return response()->json([
+                'level' => null,
+                'ph_air' => null,
+                'kekeruhan_air' => null,
+                'status' => 'No data available',
+                'chart_data' => []
+            ]);
+        }
+
+        $level = $latestWaterLevel->level;
+        $ph_air = $latestWaterQuality->ph_air;
+        $kekeruhan_air = $latestWaterQuality->kekeruhan_air;
+        $status = $this->getLevelStatus($level);
+
+        $chartData = WaterLevel::select('level', DB::raw('DATE_FORMAT(created_at, "%H:%i:%s") as time'))
             ->orderBy('created_at', 'desc')
             ->take(15)
             ->get()
-            ->sortBy('created_at'); // Sorting back to ascending order for proper display
+            ->sortBy('created_at');
 
-        return response()->json($waterLevels);
+        $data = [];
+        foreach ($chartData as $chartDatum) {
+            $data[] = [
+                'time' => $chartDatum->time,
+                'level' => $chartDatum->level,
+            ];
+        }
+
+        return response()->json([
+            'level' => $level,
+            'ph_air' => $ph_air,
+            'kekeruhan_air' => $kekeruhan_air,
+            'status' => $status,
+            'chart_data' => $data
+        ]);
+    }
+
+    public function getWaterQualityData()
+    {
+        // Ambil data pH air dan kekeruhan air terbaru
+        $latestWaterQuality = WaterQuality::latest()->first();
+
+        // Cek apakah data ada
+        if (!$latestWaterQuality) {
+            return response()->json([
+                'ph_air' => null,
+                'kekeruhan_air' => null,
+                'status' => 'No data available',
+                'timestamp' => Carbon::now('Asia/Jakarta')->toDateTimeString(),
+            ]);
+        }
+
+        $ph_air = $latestWaterQuality->ph_air;
+        $kekeruhan_air = $latestWaterQuality->kekeruhan_air;
+        $status = $this->getWaterQualityStatus($ph_air, $kekeruhan_air);
+
+        return response()->json([
+            'ph_air' => $ph_air,
+            'kekeruhan_air' => $kekeruhan_air,
+            'status' => $status,
+            'timestamp' => Carbon::now('Asia/Jakarta')->toDateTimeString(),
+        ]);
+    }
+
+    public function getWaterQualityStatus($ph_air, $kekeruhan_air)
+    {
+        if ($kekeruhan_air >= 50 && $kekeruhan_air <= 300 && $ph_air >= 6.5 && $ph_air <= 8.5) {
+            return "Layak Minum";
+        } else {
+            return "Tidak Layak Minum";
+        }
     }
 
     public function history(Request $request)
@@ -159,11 +229,11 @@ class WaterLevelController extends Controller
 
         if ($level >= 0.60 * $maxHeight && $level < 0.80 * $maxHeight) {
             // Notifikasi untuk level KRITIS
-            $message = "[PERHATIAN] Ketinggian Air Kritis\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
+            $message = "*[PERHATIAN] Ketinggian Air Kritis*\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
             $this->sendNotificationMultipleTimes($message, 1);
         } elseif ($level >= 0.80 * $maxHeight) {
             // Notifikasi untuk level RUSAK
-            $message = "[PERHATIAN] Ketinggian Air RUSAK\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level rusak:\n- Jarak dari permukaan tanah ke permukaan air: {$level} meter\n\nMohon segera ambil langkah yang telah dipersiapkan karena sumur sudah tidak layak digunakan.\n\nTerima kasih.";
+            $message = "*[PERHATIAN] Ketinggian Air RUSAK*\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level rusak:\n- Jarak dari permukaan tanah ke permukaan air: {$level} meter\n\nMohon segera ambil langkah yang telah dipersiapkan karena sumur sudah tidak layak digunakan.\n\nTerima kasih.";
             $this->sendNotificationMultipleTimes($message, 1);
         }
     }
@@ -301,7 +371,7 @@ class WaterLevelController extends Controller
     }
     private function calculateVolume($height)
     {
-        $radius = 0.0675; // 82.5 mm diubah menjadi meter
+        $radius = 0.075; // 82.5 mm diubah menjadi meter
         $volumeInCubicMeters =  3.141592653589793 * pow($radius, 2) * $height; // Volume dalam meter kubik
         $volumeInLiters = $volumeInCubicMeters * 1000; // Ubah ke liter
         return $volumeInLiters;

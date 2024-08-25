@@ -36,8 +36,12 @@ Route::middleware(['auth', RoleMiddleware::class . ':Admin'])->group(function ()
 
 // Route untuk API dan lainnya
 Route::get('/api/water-level-data', [WaterLevelController::class, 'getWaterLevelData']);
+// Untuk API
+Route::get('/api/water-quality-data', [WaterLevelController::class, 'getWaterQualityData']);
+
+// Route::get('/api/get-chart-data', [WaterLevelController::class, 'getChartData']);
 Route::get('/download-report', [WaterLevelController::class, 'downloadReport'])->name('downloadReport');
-Route::get('/get-chart-data', [WaterLevelController::class, 'getChartData'])->name('getChartData');
+Route::get('/api/get-chart-data', [WaterLevelController::class, 'getChartData'])->name('getChartData');
 Route::get('/search-by-status', [WaterLevelController::class, 'searchByStatus'])->name('searchByStatus');
 Route::post('/services/submit', [LayananController::class, 'submit'])->name('layanan.submit');
 Route::get('/log-layanan', [LayananController::class, 'index'])->name('log-layanan');
