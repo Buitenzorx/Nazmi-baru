@@ -233,7 +233,7 @@
             // Function to update water quality status
             // Update water quality data every second
             setInterval(function() {
-                $.getJSON("/api/water-quality-data", function(data) {
+                $.getJSON("api/water-quality-data", function(data) {
                     $("#ph_air").text(data.ph_air);
                     $("#kekeruhan_air").text(data.kekeruhan_air);
                     updateWaterQualityStatus(data.ph_air, data.kekeruhan_air);
