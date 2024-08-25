@@ -248,7 +248,7 @@
                 if (ph_air >= 6.5 && ph_air <= 8.5 && kekeruhan_air <= 25) {
                     status = "Baik";
                 } else {
-                    status = "Tidak Memadai";
+                    status = "Tidak Baik";
                 }
 
                 $("#water_quality_status").text(status);
