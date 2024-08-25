@@ -172,7 +172,7 @@
 
             // Fetch the initial data
             function fetchData() {
-                $.getJSON("Nazmi-baru/public/api/water-level-data", function(data) {
+                $.getJSON("api/water-level-data", function(data) {
                     chartData = data.chart_data; // Get the chart data from the API response
                     chartData.forEach(function(entry) {
                         waterLevelChart.data.labels.push(entry.time);
@@ -186,7 +186,7 @@
 
             // Update data every second
             setInterval(function() {
-                $.getJSON("Nazmi-baru/public/api/water-level-data", function(data) {
+                $.getJSON("api/water-level-data", function(data) {
                     if (lastValue !== data.level) {
                         $("#nilai_jarak").text(data.level);
                         $("#ketinggian_air").text(84 - data.level);
@@ -233,7 +233,7 @@
             // Function to update water quality status
             // Update water quality data every second
             setInterval(function() {
-                $.getJSON("Nazmi-baru/public/api/water-quality-data", function(data) {
+                $.getJSON("api/water-quality-data", function(data) {
                     $("#ph_air").text(data.ph_air);
                     $("#kekeruhan_air").text(data.kekeruhan_air);
                     updateWaterQualityStatus(data.ph_air, data.kekeruhan_air);
