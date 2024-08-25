@@ -58,7 +58,7 @@ class WaterLevelController extends Controller
             $waterLevel->level = $request->level;
             $waterLevel->created_at = Carbon::now('Asia/Jakarta');
             $waterLevel->save();
-            $this->checkAndSendWaterQualityNotification($request->ph_air, $request->kekeruhan_air);
+            
             $this->checkAndSendNotification($waterLevel);
             return response()->json([
                 'message' => 'Water level recorded successfully',
@@ -79,7 +79,7 @@ class WaterLevelController extends Controller
             $waterQuality->kekeruhan_air = $request->kekeruhan_air;
             $waterQuality->created_at = Carbon::now('Asia/Jakarta');
             $waterQuality->save();
-
+            $this->checkAndSendWaterQualityNotification($request->ph_air, $request->kekeruhan_air);
             return response()->json([
                 'message' => 'Water quality recorded successfully',
                 'data' => [
@@ -243,20 +243,21 @@ class WaterLevelController extends Controller
         }
     }
 
-    private function checkAndSendWaterQualityNotification($ph_air, $kekeruhan_air)
+    public function checkAndSendWaterQualityNotification($ph_air, $kekeruhan_air)
     {
-        $standardPhRange = [6.5, 8.5];
-        $standardKekeruhan = 25;
+        // Pastikan data pH dan kekeruhan air ada sebelum memproses
+        if ($ph_air === null || $kekeruhan_air === null) {
+            \Log::warning('Data pH atau kekeruhan air tidak tersedia.');
+            return;
+        }
 
-        $phStatus = ($ph_air >= $standardPhRange[0] && $ph_air <= $standardPhRange[1]) ? 'OK' : 'Not OK';
-        $kekeruhanStatus = ($kekeruhan_air <= $standardKekeruhan) ? 'OK' : 'Not OK';
-
-        if ($phStatus === 'Not OK' || $kekeruhanStatus === 'Not OK') {
+        $status = $this->getWaterQualityStatus($ph_air, $kekeruhan_air);
+        if ($status === 'Tidak Memadai') {
             $message = "*[PERHATIAN] Kualitas Air Tidak Sesuai dengan Standar*\n--------------------------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKualitas air tidak sesuai dengan standar:\n- pH = {$ph_air}\n- Kekeruhan air = {$kekeruhan_air} NTU\n\nMohon segera cek kondisi air untuk memastikan kualitas tetap sesuai standar.\n\nTerima kasih.";
-
             $this->sendNotificationMultipleTimes($message, 1);
         }
     }
+
     private function checkAndSendNotification($waterLevel)
     {
         $level = $waterLevel->level;
@@ -326,65 +327,65 @@ class WaterLevelController extends Controller
         }
     }
     public function downloadReport(Request $request)
-{
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-    if (!$startDate || !$endDate) {
-        return redirect()->back()->withErrors('Please provide both start and end dates.');
-    }
-
-    $startDate = Carbon::parse($startDate)->startOfDay();
-    $endDate = Carbon::parse($endDate)->endOfDay();
-
-    // Retrieve water level data
-    $waterLevels = WaterLevel::whereBetween('created_at', [$startDate, $endDate])
-        ->orderBy('created_at', 'asc')
-        ->get();
-
-    // Retrieve the latest water quality data
-    $latestWaterQuality = WaterQuality::latest()->first();
-
-    $fileName = 'report-' . Carbon::now()->format('Y-m-d') . '.csv';
-
-    $headers = [
-        'Content-Type' => 'text/csv',
-        'Content-Disposition' => "attachment; filename=\"$fileName\"",
-    ];
-
-    $columns = ['No', 'Tanggal', 'Waktu', 'Jarak', 'Ketinggian Air', 'Volume', 'pH Air', 'Kekeruhan Air', 'Status'];
-
-    $callback = function () use ($waterLevels, $latestWaterQuality, $columns) {
-        $file = fopen('php://output', 'w');
-        fputcsv($file, $columns);
-
-        foreach ($waterLevels as $index => $record) {
-            $ketinggianAir = 84 - $record->level; // Calculate water level
-            $volume = $this->calculateVolume($ketinggianAir); // Calculate volume
-
-            // Use the latest water quality data for each record
-            $ph_air = $latestWaterQuality ? $latestWaterQuality->ph_air : 'N/A';
-            $kekeruhan_air = $latestWaterQuality ? $latestWaterQuality->kekeruhan_air : 'N/A';
-
-            $row = [
-                $index + 1,
-                Carbon::parse($record->created_at)->format('Y-m-d'),
-                Carbon::parse($record->created_at)->format('H:i:s'),
-                $record->level . ' Meter',
-                $ketinggianAir . ' Meter',
-                $volume . ' Liter',
-                $ph_air, // pH Air
-                $kekeruhan_air . ' NTU',
-                $this->getLevelStatus($record->level),
-            ];
-            fputcsv($file, $row);
+        if (!$startDate || !$endDate) {
+            return redirect()->back()->withErrors('Please provide both start and end dates.');
         }
 
-        fclose($file);
-    };
+        $startDate = Carbon::parse($startDate)->startOfDay();
+        $endDate = Carbon::parse($endDate)->endOfDay();
 
-    return response()->stream($callback, 200, $headers);
-}
+        // Retrieve water level data
+        $waterLevels = WaterLevel::whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        // Retrieve the latest water quality data
+        $latestWaterQuality = WaterQuality::latest()->first();
+
+        $fileName = 'report-' . Carbon::now()->format('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$fileName\"",
+        ];
+
+        $columns = ['No', 'Tanggal', 'Waktu', 'Jarak', 'Ketinggian Air', 'Volume', 'pH Air', 'Kekeruhan Air', 'Status'];
+
+        $callback = function () use ($waterLevels, $latestWaterQuality, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($waterLevels as $index => $record) {
+                $ketinggianAir = 84 - $record->level; // Calculate water level
+                $volume = $this->calculateVolume($ketinggianAir); // Calculate volume
+
+                // Use the latest water quality data for each record
+                $ph_air = $latestWaterQuality ? $latestWaterQuality->ph_air : 'N/A';
+                $kekeruhan_air = $latestWaterQuality ? $latestWaterQuality->kekeruhan_air : 'N/A';
+
+                $row = [
+                    $index + 1,
+                    Carbon::parse($record->created_at)->format('Y-m-d'),
+                    Carbon::parse($record->created_at)->format('H:i:s'),
+                    $record->level . ' Meter',
+                    $ketinggianAir . ' Meter',
+                    $volume . ' Liter',
+                    $ph_air, // pH Air
+                    $kekeruhan_air . ' NTU',
+                    $this->getLevelStatus($record->level),
+                ];
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 
 
     public function getChartData(Request $request)
