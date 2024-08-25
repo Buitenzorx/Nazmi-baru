@@ -31,7 +31,7 @@
             </p>
         </section>
         <div class="col-md-12">
-            <img src="{{ asset('img/Alat-5.png') }}" alt="Alat" class="img-fluid">
+            <img src="{{ asset('img/alat-5.png') }}" alt="Alat" class="img-fluid">
         </div>
         <section class="info-section mt-4">
             <p style="font-size: 20px; font-weight: bold; color: white; text-align: justify;">
