@@ -59,6 +59,7 @@ class WaterLevelController extends Controller
         $waterLevel->created_at = Carbon::now('Asia/Jakarta');
         $waterLevel->save();
 
+        $this->checkAndSendNotification($waterLevel);
         return response()->json([
             'message' => 'Water level recorded successfully',
             'data' => [
