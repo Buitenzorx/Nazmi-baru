@@ -250,11 +250,11 @@ class WaterLevelController extends Controller
 
         if ($level >= 0.60 * $maxHeight && $level < 0.80 * $maxHeight) {
             // Notifikasi untuk level KRITIS
-            $message = "*[PERHATIAN] Ketinggian Air Kritis*\n--------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
+            $message = "*[PERHATIAN] Ketinggian Air Kritis*\n----------------------------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
             $this->sendNotificationMultipleTimes($message, 1);
         } elseif ($level >= 0.80 * $maxHeight) {
             // Notifikasi untuk level RUSAK
-            $message = "*[PERHATIAN] Ketinggian Air RUSAK*\n--------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level rusak:\n- Jarak dari permukaan tanah ke permukaan air: {$level} meter\n\nMohon segera ambil langkah yang telah dipersiapkan karena sumur sudah tidak layak digunakan.\n\nTerima kasih.";
+            $message = "*[PERHATIAN] Ketinggian Air RUSAK*\n----------------------------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level rusak:\n- Jarak dari permukaan tanah ke permukaan air: {$level} meter\n\nMohon segera ambil langkah yang telah dipersiapkan karena sumur sudah tidak layak digunakan.\n\nTerima kasih.";
             $this->sendNotificationMultipleTimes($message, 1);
         }
     }
