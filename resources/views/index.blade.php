@@ -172,7 +172,7 @@
 
             // Fetch the initial data
             function fetchData() {
-                $.getJSON("api/water-level-data", function(data) {
+                $.getJSON("Nazmi-baru/public/api/water-level-data", function(data) {
                     chartData = data.chart_data; // Get the chart data from the API response
                     chartData.forEach(function(entry) {
                         waterLevelChart.data.labels.push(entry.time);
@@ -186,7 +186,7 @@
 
             // Update data every second
             setInterval(function() {
-                $.getJSON("api/water-level-data", function(data) {
+                $.getJSON("Nazmi-baru/public/api/water-level-data", function(data) {
                     if (lastValue !== data.level) {
                         $("#nilai_jarak").text(data.level);
                         $("#ketinggian_air").text(84 - data.level);
