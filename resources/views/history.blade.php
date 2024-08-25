@@ -43,9 +43,8 @@
                         </div>
                     </form>
                 </div>
-
-                <!-- Show all data in scrollable table -->
-                <div id="all-data-scrollable" style="overflow-y: auto; max-height: 400px; display: block; margin-top: 20px;">
+                <div id="water-level-data" style="overflow-y: auto; max-height: 400px; display: block; margin-top: 20px;">
+                    <h4>Data Level Air</h4>
                     <table class="table table-bordered table-striped mt-2">
                         <thead class="thead-dark">
                             <tr>
@@ -53,15 +52,13 @@
                                 <th>Tanggal</th>
                                 <th>Waktu</th>
                                 <th>Jarak</th>
-                                <th>Ketinggian Air</th>
+                                <th>Tinggi Air</th>
                                 <th>Volume</th>
-                                <th>Ph Air</th>
-                                <th>Kekeruhan Air   </th>
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody">
-                            @foreach ($allLevels as $waterLevel)
+                        <tbody>
+                            @foreach ($waterLevels as $waterLevel)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $waterLevel->tanggal }}</td>
@@ -69,14 +66,43 @@
                                     <td>{{ $waterLevel->level }} Meter</td>
                                     <td>{{ $waterLevel->ketinggian_air }} Meter</td>
                                     <td>{{ $waterLevel->volume }} Liter</td>
-                                    <td>{{ $waterLevel->ph_air }}</td>
-                                    <td>{{ $waterLevel->kekeruhan_air}} NTU</td>
-                                    <td class="status">{{ $waterLevel->status }}</td>
+                                    <td>{{ $waterLevel->status }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+    
+                <!-- Water Quality Data Table -->
+                <div id="water-quality-data" style="overflow-y: auto; max-height: 400px; display: block; margin-top: 20px;">
+                    <h4>Data Kualitas Air</h4>
+                    <table class="table table-bordered table-striped mt-2">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                                <th>Level pH</th>
+                                <th>Kekeruhan</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($waterQualities as $waterQuality)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $waterQuality->tanggal }}</td>
+                                    <td>{{ $waterQuality->waktu }}</td>
+                                    <td>{{ $waterQuality->ph_air }}</td>
+                                    <td>{{ $waterQuality->kekeruhan_air }} NTU</td>
+                                    <td>{{ $waterQuality->status }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+    
+                <!-- Water Quality Data Table -->
                 
                 <!-- Download Report and Generate Chart -->
                 <div class="col-md-12 mt-3">

@@ -43,56 +43,56 @@ class WaterLevelController extends Controller
     }
 
     public function store(Request $request)
-{
-    \Log::info('Request Data: ', $request->all());
+    {
+        \Log::info('Request Data: ', $request->all());
 
-    // Validate and store data based on the presence of fields
-    if ($request->has('level') && !$request->has('ph_air') && !$request->has('kekeruhan_air')) {
-        // Format 1: { "level": 123 }
-        $request->validate([
-            'level' => 'required|numeric'
-        ]);
+        // Validate and store data based on the presence of fields
+        if ($request->has('level') && !$request->has('ph_air') && !$request->has('kekeruhan_air')) {
+            // Format 1: { "level": 123 }
+            $request->validate([
+                'level' => 'required|numeric'
+            ]);
 
-        // Simpan data level air
-        $waterLevel = new WaterLevel();
-        $waterLevel->level = $request->level;
-        $waterLevel->created_at = Carbon::now('Asia/Jakarta');
-        $waterLevel->save();
+            // Simpan data level air
+            $waterLevel = new WaterLevel();
+            $waterLevel->level = $request->level;
+            $waterLevel->created_at = Carbon::now('Asia/Jakarta');
+            $waterLevel->save();
 
-        $this->checkAndSendNotification($waterLevel);
-        return response()->json([
-            'message' => 'Water level recorded successfully',
-            'data' => [
-                'water_level' => $waterLevel
-            ]
-        ]);
-    } elseif ($request->has('ph_air') && $request->has('kekeruhan_air')) {
-        // Format 2: { "ph_air": 7.0, "kekeruhan_air": 50 }
-        $request->validate([
-            'ph_air' => 'required|numeric',
-            'kekeruhan_air' => 'required|numeric'
-        ]);
+            $this->checkAndSendNotification($waterLevel);
+            return response()->json([
+                'message' => 'Water level recorded successfully',
+                'data' => [
+                    'water_level' => $waterLevel
+                ]
+            ]);
+        } elseif ($request->has('ph_air') && $request->has('kekeruhan_air')) {
+            // Format 2: { "ph_air": 7.0, "kekeruhan_air": 50 }
+            $request->validate([
+                'ph_air' => 'required|numeric',
+                'kekeruhan_air' => 'required|numeric'
+            ]);
 
-        // Simpan data kualitas air
-        $waterQuality = new WaterQuality();
-        $waterQuality->ph_air = $request->ph_air;
-        $waterQuality->kekeruhan_air = $request->kekeruhan_air;
-        $waterQuality->created_at = Carbon::now('Asia/Jakarta');
-        $waterQuality->save();
+            // Simpan data kualitas air
+            $waterQuality = new WaterQuality();
+            $waterQuality->ph_air = $request->ph_air;
+            $waterQuality->kekeruhan_air = $request->kekeruhan_air;
+            $waterQuality->created_at = Carbon::now('Asia/Jakarta');
+            $waterQuality->save();
 
-        return response()->json([
-            'message' => 'Water quality recorded successfully',
-            'data' => [
-                'water_quality' => $waterQuality
-            ]
-        ]);
-    } else {
-        // Invalid request format
-        return response()->json([
-            'message' => 'Invalid request format'
-        ], 400);
+            return response()->json([
+                'message' => 'Water quality recorded successfully',
+                'data' => [
+                    'water_quality' => $waterQuality
+                ]
+            ]);
+        } else {
+            // Invalid request format
+            return response()->json([
+                'message' => 'Invalid request format'
+            ], 400);
+        }
     }
-}
 
     public function getWaterLevelData()
     {
@@ -174,62 +174,57 @@ class WaterLevelController extends Controller
     }
 
     public function history(Request $request)
-{
-    $query = WaterLevel::orderBy('created_at', 'desc');
+    {
+        // Water Level Query
+        $waterLevelQuery = WaterLevel::orderBy('created_at', 'desc');
 
-    // Apply filters if provided
-    if ($request->has('date') && $request->input('date')) {
-        $date = Carbon::parse($request->input('date'))->format('Y-m-d');
-        $query->whereDate('created_at', $date);
-    }
+        if ($request->has('date') && $request->input('date')) {
+            $date = Carbon::parse($request->input('date'))->format('Y-m-d');
+            $waterLevelQuery->whereDate('created_at', $date);
+        }
 
-    if ($request->has('start_time') && $request->input('start_time')) {
-        $startTime = Carbon::parse($request->input('start_time'))->format('H:i:s');
-        $query->whereTime('created_at', '>=', $startTime);
-    }
+        if ($request->has('start_time') && $request->input('start_time')) {
+            $startTime = Carbon::parse($request->input('start_time'))->format('H:i:s');
+            $waterLevelQuery->whereTime('created_at', '>=', $startTime);
+        }
 
-    if ($request->has('end_time') && $request->input('end_time')) {
-        $endTime = Carbon::parse($request->input('end_time'))->format('H:i:s');
-        $query->whereTime('created_at', '<=', $endTime);
-    }
+        if ($request->has('end_time') && $request->input('end_time')) {
+            $endTime = Carbon::parse($request->input('end_time'))->format('H:i:s');
+            $waterLevelQuery->whereTime('created_at', '<=', $endTime);
+        }
 
-    if ($request->has('time') && $request->input('time')) {
-        $time = $request->input('time');
-        $query->whereTime('created_at', '=', $time);
-    }
+        if ($request->has('status') && $request->input('status')) {
+            $status = $request->input('status');
+            $waterLevelQuery->where('status', $status);
+        }
 
-    $allLevels = $query->get();
+        $waterLevels = $waterLevelQuery->get()->transform(function ($waterLevel, $key) {
+            $ketinggianAir = 84 - $waterLevel->level;
+            $volume = $this->calculateVolume($ketinggianAir);
 
-    // Transform all levels to include additional fields
-    $allLevels->transform(function ($waterLevel, $key) {
-        $ketinggianAir = 84 - $waterLevel->level; // Menghitung ketinggian air
-        $volume = $this->calculateVolume($ketinggianAir); // Menghitung volume
-
-        $waterLevel->no = $key + 1;
-        $waterLevel->tanggal = Carbon::parse($waterLevel->created_at)->format('Y-m-d');
-        $waterLevel->waktu = Carbon::parse($waterLevel->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
-        $waterLevel->ketinggian_air = round($ketinggianAir, 2); // Menyimpan hasil ketinggian air
-        $waterLevel->volume = round($volume, 2); // Menyimpan hasil volume
-        $waterLevel->status = $this->getLevelStatus($waterLevel->level);
-        return $waterLevel;
-    });
-
-    // Filter berdasarkan status setelah data diproses
-    if ($request->has('status') && $request->input('status')) {
-        $status = $request->input('status');
-        $allLevels = $allLevels->filter(function ($waterLevel) use ($status) {
-            return $waterLevel->status === $status;
+            $waterLevel->tanggal = Carbon::parse($waterLevel->created_at)->format('Y-m-d');
+            $waterLevel->waktu = Carbon::parse($waterLevel->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
+            $waterLevel->ketinggian_air = round($ketinggianAir, 2);
+            $waterLevel->volume = round($volume, 2);
+            $waterLevel->status = $this->getLevelStatus($waterLevel->level);
+            return $waterLevel;
         });
+
+        // Water Quality Query
+        $waterQualityQuery = WaterQuality::orderBy('created_at', 'desc');
+        $waterQualities = $waterQualityQuery->get()->transform(function ($waterQuality, $key) {
+            $waterQuality->tanggal = Carbon::parse($waterQuality->created_at)->format('Y-m-d');
+            $waterQuality->waktu = Carbon::parse($waterQuality->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
+            $waterQuality->status = $this->getWaterQualityStatus($waterQuality->ph_air, $waterQuality->kekeruhan_air);
+            return $waterQuality;
+        });
+
+        return view('history', [
+            'waterLevels' => $waterLevels,
+            'waterQualities' => $waterQualities,
+        ]);
     }
 
-    // Take first 10 for display (latest first)
-    $displayedLevels = $allLevels->take(10);
-
-    return view('history', [
-        'displayedLevels' => $displayedLevels,
-        'allLevels' => $allLevels
-    ]);
-}
 
 
 
@@ -255,11 +250,11 @@ class WaterLevelController extends Controller
 
         if ($level >= 0.60 * $maxHeight && $level < 0.80 * $maxHeight) {
             // Notifikasi untuk level KRITIS
-            $message = "*[PERHATIAN] Ketinggian Air Kritis*\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
+            $message = "*[PERHATIAN] Ketinggian Air Kritis*\n--------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level kritis:\n- Jarak dari permukaan tanah ke permukaan air : {$level} meter\n\nMohon segera cek kondisi sumur untuk memastikan pasokan air tetap tersedia.\n\nTerima kasih.";
             $this->sendNotificationMultipleTimes($message, 1);
         } elseif ($level >= 0.80 * $maxHeight) {
             // Notifikasi untuk level RUSAK
-            $message = "*[PERHATIAN] Ketinggian Air RUSAK*\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level rusak:\n- Jarak dari permukaan tanah ke permukaan air: {$level} meter\n\nMohon segera ambil langkah yang telah dipersiapkan karena sumur sudah tidak layak digunakan.\n\nTerima kasih.";
+            $message = "*[PERHATIAN] Ketinggian Air RUSAK*\n--------------------\nSumur PAM Sagara di Desa Sindangkerta\n\nKetinggian air sumur telah mencapai level rusak:\n- Jarak dari permukaan tanah ke permukaan air: {$level} meter\n\nMohon segera ambil langkah yang telah dipersiapkan karena sumur sudah tidak layak digunakan.\n\nTerima kasih.";
             $this->sendNotificationMultipleTimes($message, 1);
         }
     }
@@ -357,7 +352,7 @@ class WaterLevelController extends Controller
                     $ketinggianAir . ' Meter',
                     $volume . ' Liter',
                     $record->ph_air, // pH Air
-                    $record->kekeruhan_air . ' PPM', 
+                    $record->kekeruhan_air . ' PPM',
                     $this->getLevelStatus($record->level),
                 ];
                 fputcsv($file, $row);
@@ -398,7 +393,7 @@ class WaterLevelController extends Controller
     private function calculateVolume($height)
     {
         $radius = 0.075; // 82.5 mm diubah menjadi meter
-        $volumeInCubicMeters =  3.141592653589793 * pow($radius, 2) * $height; // Volume dalam meter kubik
+        $volumeInCubicMeters = 3.141592653589793 * pow($radius, 2) * $height; // Volume dalam meter kubik
         $volumeInLiters = $volumeInCubicMeters * 1000; // Ubah ke liter
         return $volumeInLiters;
     }
