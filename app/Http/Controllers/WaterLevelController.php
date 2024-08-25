@@ -43,30 +43,55 @@ class WaterLevelController extends Controller
     }
 
     public function store(Request $request)
-    {
-        \Log::info('Request Data: ', $request->all());
+{
+    \Log::info('Request Data: ', $request->all());
 
+    // Validate and store data based on the presence of fields
+    if ($request->has('level') && !$request->has('ph_air') && !$request->has('kekeruhan_air')) {
+        // Format 1: { "level": 123 }
         $request->validate([
-            'level' => 'required|numeric',
+            'level' => 'required|numeric'
+        ]);
+
+        // Simpan data level air
+        $waterLevel = new WaterLevel();
+        $waterLevel->level = $request->level;
+        $waterLevel->created_at = Carbon::now('Asia/Jakarta');
+        $waterLevel->save();
+
+        return response()->json([
+            'message' => 'Water level recorded successfully',
+            'data' => [
+                'water_level' => $waterLevel
+            ]
+        ]);
+    } elseif ($request->has('ph_air') && $request->has('kekeruhan_air')) {
+        // Format 2: { "ph_air": 7.0, "kekeruhan_air": 50 }
+        $request->validate([
             'ph_air' => 'required|numeric',
             'kekeruhan_air' => 'required|numeric'
         ]);
 
-        $waterLevel = new WaterLevel();
-        $waterLevel->level = $request->level;
-        $waterLevel->ph_air = $request->ph_air;
-        $waterLevel->kekeruhan_air = $request->kekeruhan_air;
-        $waterLevel->created_at = Carbon::now('Asia/Jakarta'); // Store time in WIB
-        $waterLevel->save();
-
-        // Mengirim notifikasi berdasarkan kondisi level
-        $this->checkAndSendNotification($waterLevel);
+        // Simpan data kualitas air
+        $waterQuality = new WaterQuality();
+        $waterQuality->ph_air = $request->ph_air;
+        $waterQuality->kekeruhan_air = $request->kekeruhan_air;
+        $waterQuality->created_at = Carbon::now('Asia/Jakarta');
+        $waterQuality->save();
 
         return response()->json([
-            'message' => 'Water level recorded successfully',
-            'data' => $waterLevel
+            'message' => 'Water quality recorded successfully',
+            'data' => [
+                'water_quality' => $waterQuality
+            ]
         ]);
+    } else {
+        // Invalid request format
+        return response()->json([
+            'message' => 'Invalid request format'
+        ], 400);
     }
+}
 
     public function getWaterLevelData()
     {
