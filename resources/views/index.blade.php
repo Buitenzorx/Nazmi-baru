@@ -68,7 +68,7 @@
             </div>
 
             <!-- TDS Air -->
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card mb-3" style="height: 150px;">
                     <div class="card-header"
                         style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
@@ -82,7 +82,7 @@
             </div>
 
             <!-- pH Air -->
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="card mb-3" style="height: 150px;">
                     <div class="card-header"
                         style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
@@ -95,7 +95,7 @@
                 </div>
             </div>
 
-            {{-- <!-- Water Usability -->
+            <!-- Water Usability -->
             <div class="col-md-6">
                 <div class="card mb-6" style="height: 150px;">
                     <div class="card-header"
@@ -107,7 +107,7 @@
                         <h1 id="water_quality_status">-</h1>
                     </div>
                 </div>
-            </div> --}}
+            </div>
         </div>
 
         <div class="row" style="margin-bottom:200px; margin-left:-50px">
