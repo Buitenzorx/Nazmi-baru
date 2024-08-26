@@ -166,7 +166,7 @@ class WaterLevelController extends Controller
 
     public function getWaterQualityStatus($ph_air, $kekeruhan_air)
     {
-        if ($ph_air >= 6.5 && $ph_air <= 8.5 && $kekeruhan_air <= 25) {
+        if ($ph_air >= 6.5 && $ph_air <= 8.5 && $kekeruhan_air <= 2000) {
             return "Baik";
         } else {
             return "Tidak Memadai";

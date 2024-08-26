@@ -245,7 +245,7 @@
                 let status = "Baik";
 
                 // Kondisi logika yang diperbaiki
-                if (ph_air >= 6.5 && ph_air <= 8.5 && kekeruhan_air <= 25) {
+                if (ph_air >= 6.5 && ph_air <= 8.5 && kekeruhan_air <= 2) {
                     status = "Baik";
                 } else {
                     status = "Tidak Memadai";
