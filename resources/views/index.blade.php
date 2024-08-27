@@ -149,19 +149,32 @@
 
     </div>
     <style>
-        @keyframes wave {
-            0% {
-                height: 65%;
-            }
+        #water-container {
+            width: 200px;
+            /* lebar wadah */
+            height: 300px;
+            /* tinggi wadah */
+            border: 2px solid #000;
+            /* border untuk wadah */
+            position: relative;
+            /* untuk membuat air posisi relatif */
+            overflow: hidden;
+            /* untuk memotong bagian yang melampaui wadah */
+            background-color: #e0e0e0;
+            /* warna latar belakang wadah */
+        }
 
-            50% {
-                height: 70%;
-            }
-
-            100% {
-                height: 65%;
-                /* Adjust to be 5% lower than 40% */
-            }
+        #water {
+            width: 100%;
+            height: 0;
+            /* dimulai dari nol, akan diperbarui */
+            background-color: #00f;
+            /* warna air */
+            position: absolute;
+            bottom: 0;
+            /* memulai dari bawah */
+            transition: height 0.5s ease;
+            /* animasi smooth saat ketinggian berubah */
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -170,7 +183,7 @@
         $(document).ready(function() {
             var lastValue = null;
             var chartData = [];
-
+    
             // Initialize the chart
             var ctx = document.getElementById('waterLevelChart').getContext('2d');
             var waterLevelChart = new Chart(ctx, {
@@ -202,7 +215,7 @@
                     }
                 }
             });
-
+    
             // Fetch the initial data
             function fetchData() {
                 $.getJSON("api/water-level-data", function(data) {
@@ -214,9 +227,9 @@
                     waterLevelChart.update();
                 });
             }
-
+    
             fetchData();
-
+    
             // Update data every second
             setInterval(function() {
                 $.getJSON("api/water-level-data", function(data) {
@@ -229,18 +242,17 @@
                         $("#STATUS-JARAK").text(data.status);
                         lastValue = data.level;
                         updateChart(data);
-                        updateWaterLevelAnimation(84 - data
-                            .level); // Update the water level animation
+                        updateWaterLevelAnimation(84 - data.level); // Update the water level animation
                         updateWaterQualityStatus(data.ph_air, data.kekeruhan_air);
                     }
                 });
             }, 1000);
-
+    
             // Function to update the chart
             function updateChart(data) {
                 var time = new Date().toLocaleTimeString();
-                var level = (84 - data.level);
-
+                var level = 84 - data.level;
+    
                 chartData.push({
                     time: time,
                     level: level
@@ -248,7 +260,7 @@
                 if (chartData.length > 15) {
                     chartData.shift();
                 }
-
+    
                 waterLevelChart.data.labels = chartData.map(function(entry) {
                     return entry.time;
                 });
@@ -257,8 +269,7 @@
                 });
                 waterLevelChart.update();
             }
-
-            // Function to update the water level animation
+    
             // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
                 var wellHeight = 8500; // Height of the well in pixels
@@ -267,43 +278,43 @@
                 $("#water").css('height', waterHeight + 'px');
                 $("#water-level-value").text(level.toFixed(2)); // Update the ketinggian displayed inside the water
                 $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
-
+    
                 // Determine color based on level
                 var color;
                 if (level <= 0.40 * maxLevel) { // Safe level
-                    color = 'red';
+                    color = 'green';
                 } else if (level <= 0.60 * maxLevel) { // Warning level
                     color = 'yellow';
                 } else if (level <= 0.80 * maxLevel) { // Danger level
-                    color = 'green';
-                } else { // Danger level
-                    color = 'green';
+                    color = 'orange';
+                } else { // Extreme danger level
+                    color = 'red';
                 }
-
+    
                 // Update the water color based on the status
                 $("#water").css('background-color', color);
             }
-
-
+    
             // Function to calculate volume
             function calculateVolume(height) {
                 var radius = 0.075; // 82.5 mm to meters
                 var volume = Math.PI * Math.pow(radius, 2) * height; // Volume in cubic meters
                 return (volume * 1000).toFixed(2); // Convert to liters and format
             }
-
+    
             // Function to update water quality status
             function updateWaterQualityStatus(ph_air, kekeruhan_air) {
                 let status = "Baik";
-
+    
                 if (ph_air >= 6.5 && ph_air <= 8.5 && kekeruhan_air <= 2) {
                     status = "Baik";
                 } else {
                     status = "Tidak Memadai";
                 }
-
+    
                 $("#water_quality_status").text(status);
             }
         });
     </script>
+    
 @endsection
