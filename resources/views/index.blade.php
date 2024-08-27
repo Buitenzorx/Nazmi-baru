@@ -263,9 +263,9 @@
 
                 // Determine color based on level
                 var color;
-                if ((84 - level) <= 10) { // Assume level <= 10 is safe
+                if ((84 - level) < 33.6) { // Assume level <= 10 is safe
                     color = 'green';
-                } else if ((84 - level) <= 30) { // Assume level <= 30 is at risk
+                } else if ((84 - level) < 50.4) { // Assume level <= 30 is at risk
                     color = 'yellow';
                 } else { // Anything else is dangerous
                     color = 'red';
