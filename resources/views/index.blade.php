@@ -277,18 +277,18 @@
                 var waterHeight = (level / maxLevel) * wellHeight; // Calculate the water height based on the level
                 $("#water").css('height', waterHeight + 'px');
                 $("#water-level-value").text(level.toFixed(2)); // Update the ketinggian displayed inside the water
-                $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
+                $("#distance-value").text(level.toFixed(2)); // Update the jarak displayed above the water
     
                 // Determine color based on level
                 var color;
                 if (level <= 0.40 * maxLevel) { // Safe level
-                    color = 'green';
+                    color = 'red';
                 } else if (level <= 0.60 * maxLevel) { // Warning level
                     color = 'yellow';
                 } else if (level <= 0.80 * maxLevel) { // Danger level
                     color = 'orange';
                 } else { // Extreme danger level
-                    color = 'red';
+                    color = 'green';
                 }
     
                 // Update the water color based on the status
