@@ -174,56 +174,61 @@ class WaterLevelController extends Controller
     }
 
     public function history(Request $request)
-    {
-        // Water Level Query
-        $waterLevelQuery = WaterLevel::orderBy('created_at', 'desc');
+{
+    // Water Level Query
+    $waterLevelQuery = WaterLevel::orderBy('created_at', 'desc');
 
-        if ($request->has('date') && $request->input('date')) {
-            $date = Carbon::parse($request->input('date'))->format('Y-m-d');
-            $waterLevelQuery->whereDate('created_at', $date);
-        }
-
-        if ($request->has('start_time') && $request->input('start_time')) {
-            $startTime = Carbon::parse($request->input('start_time'))->format('H:i:s');
-            $waterLevelQuery->whereTime('created_at', '>=', $startTime);
-        }
-
-        if ($request->has('end_time') && $request->input('end_time')) {
-            $endTime = Carbon::parse($request->input('end_time'))->format('H:i:s');
-            $waterLevelQuery->whereTime('created_at', '<=', $endTime);
-        }
-
-        if ($request->has('status') && $request->input('status')) {
-            $status = $request->input('status');
-            $waterLevelQuery->where('status', $status);
-        }
-
-        $waterLevels = $waterLevelQuery->get()->transform(function ($waterLevel, $key) {
-            $ketinggianAir = 84 - $waterLevel->level;
-            $volume = $this->calculateVolume($ketinggianAir);
-
-            $waterLevel->tanggal = Carbon::parse($waterLevel->created_at)->format('Y-m-d');
-            $waterLevel->waktu = Carbon::parse($waterLevel->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
-            $waterLevel->ketinggian_air = round($ketinggianAir, 2);
-            $waterLevel->volume = round($volume, 2);
-            $waterLevel->status = $this->getLevelStatus($waterLevel->level);
-            return $waterLevel;
-        });
-
-        // Water Quality Query
-        $waterQualityQuery = WaterQuality::orderBy('created_at', 'desc');
-        $waterQualities = $waterQualityQuery->get()->transform(function ($waterQuality, $key) {
-            $waterQuality->tanggal = Carbon::parse($waterQuality->created_at)->format('Y-m-d');
-            $waterQuality->waktu = Carbon::parse($waterQuality->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
-            $waterQuality->status = $this->getWaterQualityStatus($waterQuality->ph_air, $waterQuality->kekeruhan_air);
-            return $waterQuality;
-        });
-
-        return view('history', [
-            'waterLevels' => $waterLevels,
-            'waterQualities' => $waterQualities,
-        ]);
+    if ($request->has('date') && $request->input('date')) {
+        $date = Carbon::parse($request->input('date'))->format('Y-m-d');
+        $waterLevelQuery->whereDate('created_at', $date);
     }
+
+    if ($request->has('start_time') && $request->input('start_time')) {
+        $startTime = Carbon::parse($request->input('start_time'))->format('H:i:s');
+        $waterLevelQuery->whereTime('created_at', '>=', $startTime);
+    }
+
+    if ($request->has('end_time') && $request->input('end_time')) {
+        $endTime = Carbon::parse($request->input('end_time'))->format('H:i:s');
+        $waterLevelQuery->whereTime('created_at', '<=', $endTime);
+    }
+
+    $waterLevels = $waterLevelQuery->get()->transform(function ($waterLevel) {
+        $ketinggianAir = 84 - $waterLevel->level;
+        $volume = $this->calculateVolume($ketinggianAir);
+
+        $waterLevel->tanggal = Carbon::parse($waterLevel->created_at)->format('Y-m-d');
+        $waterLevel->waktu = Carbon::parse($waterLevel->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
+        $waterLevel->ketinggian_air = round($ketinggianAir, 2);
+        $waterLevel->volume = round($volume, 2);
+        $waterLevel->status = $this->getLevelStatus($waterLevel->level); // Dynamically calculate status
+        return $waterLevel;
+    });
+
+    // Apply filtering by status if requested
+    if ($request->has('status') && $request->input('status')) {
+        $status = $request->input('status');
+        $waterLevels = $waterLevels->filter(function ($waterLevel) use ($status) {
+            return $waterLevel->status === $status;
+        });
+    }
+
+    // Water Quality Query
+    $waterQualityQuery = WaterQuality::orderBy('created_at', 'desc');
+    $waterQualities = $waterQualityQuery->get()->transform(function ($waterQuality) {
+        $waterQuality->tanggal = Carbon::parse($waterQuality->created_at)->format('Y-m-d');
+        $waterQuality->waktu = Carbon::parse($waterQuality->created_at)->timezone('Asia/Jakarta')->format('H:i:s');
+        $waterQuality->status = $this->getWaterQualityStatus($waterQuality->ph_air, $waterQuality->kekeruhan_air);
+        return $waterQuality;
+    });
+
+    return view('history', [
+        'waterLevels' => $waterLevels,
+        'waterQualities' => $waterQualities,
+    ]);
+}
+
+
 
 
 
