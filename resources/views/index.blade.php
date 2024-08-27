@@ -106,7 +106,7 @@
                         style="font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
                         <h1 id="water_quality_status">-</h1>
                     </div>
-                    <div class="col-md-3">
+                    {{-- <div class="col-md-3"> --}}
                         <div class="card" style="height: 415px">
                             <div class="card-header"
                                 style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
@@ -121,7 +121,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    {{-- </div> --}}
                 </div>
             </div>
 
