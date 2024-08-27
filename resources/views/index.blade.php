@@ -136,7 +136,7 @@
                         <h3>Status Sumur</h3>
                     </div>
                     <div id="well-container"
-                        style="width: 100%; height: 425px; border: 5px solid cornflowerblue; position: relative; background-color: rgb(255, 255, 255);">
+                        style="width: 100%; height: 440px; border: 5px solid cornflowerblue; position: relative; background-color: rgb(255, 255, 255);">
                         <!-- Water fill animation -->
                         <div id="water"
                             style="width: 100%; height: 0; background-color: cornflowerblue; position: absolute; bottom: 0; animation: wave 5s ease-in-out infinite;">
