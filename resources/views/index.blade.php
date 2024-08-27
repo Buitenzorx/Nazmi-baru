@@ -253,6 +253,7 @@
             }
 
             // Function to update the water level animation
+            // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
                 var wellHeight = 8500; // Height of the well in pixels
                 var maxLevel = 84; // Max height level in meters
@@ -263,17 +264,18 @@
 
                 // Determine color based on level
                 var color;
-                if (level < 0.40 * maxLevel) { // Assume level <= 10 is safe
+                if (level <= 0.40 * maxLevel) { // Safe level
                     color = 'green';
-                } else if (level < 0.60 * maxLevel) { // Assume level <= 30 is at risk
+                } else if (level <= 0.60 * maxLevel) { // Warning level
                     color = 'yellow';
-                } else { // Anything else is dangerous
+                } else { // Danger level
                     color = 'red';
                 }
 
                 // Update the water color based on the status
                 $("#water").css('background-color', color);
             }
+
 
             // Function to calculate volume
             function calculateVolume(height) {
