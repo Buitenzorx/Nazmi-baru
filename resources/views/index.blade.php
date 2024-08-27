@@ -220,7 +220,7 @@
                         $("#volume_air").text(calculateVolume(84 - data.level));
                         $("#kekeruhan_air").text(data.kekeruhan_air); // Update kekeruhan air
                         $("#ph_air").text(data.ph_air); // Update pH air
-                        $("#STATUS-JARAK").text(data.status2);
+                        $("#STATUS-JARAK").text(data.status);
                         lastValue = data.level;
                         updateChart(data);
                         updateWaterLevelAnimation(84 - data
