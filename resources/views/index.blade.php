@@ -275,14 +275,8 @@
                 var wellHeight = 300; // Height of the well in pixels
                 var maxLevel = 84; // Max height level in meters
                 var waterHeight = ((84 - level) / maxLevel) * wellHeight; // Calculate the water height based on the level
-
                 $("#water").css('height', waterHeight + 'px');
-                if (waterHeight > 97){
-                    $("#water-level-value").text(97).toFixed(2));
-                }else{
-                    $("#water-level-value").text((84 - level).toFixed(2));
-                }
-                 // Update the ketinggian displayed inside the water
+                $("#water-level-value").text((84 - level).toFixed(2)); // Update the ketinggian displayed inside the water
                 // $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
     
                 // Determine color based on level
