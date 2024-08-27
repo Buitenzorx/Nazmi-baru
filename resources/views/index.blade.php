@@ -283,13 +283,13 @@
                 // Determine color based on level
                 var color;
                 if (level <= 0.40 * maxLevel) { // Safe level
-                    color = 'green';
-                } else if (level <= 0.60 * maxLevel) { // Warning level
-                    color = 'yellow';
-                } else if (level <= 0.80 * maxLevel) { // Danger level
-                    color = 'orange';
-                } else { // Extreme danger level
                     color = 'red';
+                } else if (level <= 0.60 * maxLevel) { // Warning level
+                    color = 'orange';
+                } else if (level <= 0.80 * maxLevel) { // Danger level
+                    color = 'yellow';
+                } else { // Extreme danger level
+                    color = 'green';
                 }
 
                 // Update the water color based on the status
