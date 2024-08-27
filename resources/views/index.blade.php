@@ -267,7 +267,7 @@
                     color = 'green';
                 } else if (level < 0.60 * maxLevel) { // Assume level <= 30 is at risk
                     color = 'yellow';
-                } else if(level < 0.80 * maxLevel ){ // Anything else is dangerous
+                } else { // Anything else is dangerous
                     color = 'red';
                 }
 
