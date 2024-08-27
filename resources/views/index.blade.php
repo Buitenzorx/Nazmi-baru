@@ -272,7 +272,7 @@
     
             // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
-                var wellHeight = 300; // Height of the well in pixels
+                var wellHeight = 100; // Height of the well in pixels
                 var maxLevel = 84; // Max height level in meters
                 var waterHeight = ((84 - level) / maxLevel) * wellHeight; // Calculate the water height based on the level
                 $("#water").css('height', waterHeight + 'px');
