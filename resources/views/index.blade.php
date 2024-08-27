@@ -270,7 +270,7 @@
                     color = 'yellow';
                 } else if (level <= 0.80 * maxLevel) { // Danger level
                     color = 'red';
-                } else if { // Danger level
+                } else { // Danger level
                     color = 'red';
                 }
 
