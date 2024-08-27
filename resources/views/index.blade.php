@@ -270,9 +270,7 @@
                     color = 'yellow';
                 } else if (level <= 0.80 * maxLevel) { // Danger level
                     color = 'red';
-                } else { // Danger level
-                    color = 'red';
-                }
+                } 
 
                 // Update the water color based on the status
                 $("#water").css('background-color', color);
