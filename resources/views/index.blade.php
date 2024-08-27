@@ -96,8 +96,8 @@
             </div>
 
             <!-- Water Usability -->
-            <div class="col-md-6">
-                <div class="card mb-6" style="height: 150px;">
+            <div class="col-md-3">
+                <div class="card mb-3" style="height: 150px;">
                     <div class="card-header"
                         style="font-size: 16px; font-weight: bold; background-color: cornflowerblue; color: white;">
                         <h4>Kualitas Air</h4>
@@ -105,6 +105,14 @@
                     <div class="card-body"
                         style="font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; height: 100%;">
                         <h1 id="water_quality_status">-</h1>
+                    </div>
+                    <div id="well-container"
+                        style="width: 100%; height: 410px; border: 5px solid cornflowerblue; position: relative; background-color: rgb(255, 255, 255);">
+                        <!-- Water fill animation -->
+                        <div id="water"
+                            style="width: 100%; height: 0; background-color: cornflowerblue; position: absolute; bottom: 0; animation: wave 5s ease-in-out infinite;">
+                            <!-- Text elements for displaying jarak and ketinggian -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -129,7 +137,7 @@
             </div>
 
             <!-- Water Well Animation -->
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="card" style="height: 415px">
                     <div class="card-header"
                         style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
@@ -144,7 +152,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
     </div>
