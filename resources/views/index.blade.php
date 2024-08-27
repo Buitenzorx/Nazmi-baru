@@ -220,7 +220,7 @@
                         $("#volume_air").text(calculateVolume(84 - data.level));
                         $("#kekeruhan_air").text(data.kekeruhan_air); // Update kekeruhan air
                         $("#ph_air").text(data.ph_air); // Update pH air
-                        $("#STATUS-JARAK").text(data.status);
+                        $("#STATUS-JARAK").text(data.status2);
                         lastValue = data.level;
                         updateChart(data);
                         updateWaterLevelAnimation(84 - data
@@ -255,19 +255,19 @@
             // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
                 var wellHeight = 8500; // Height of the well in pixels
-                var maxHeight = 84; // Max height level in meters
-                var waterHeight = (level / maxHeight) * wellHeight; // Calculate the water height based on the level
+                var maxLevel = 84; // Max height level in meters
+                var waterHeight = (level / maxLevel) * wellHeight; // Calculate the water height based on the level
                 $("#water").css('height', waterHeight + 'px');
                 $("#water-level-value").text(level.toFixed(2)); // Update the ketinggian displayed inside the water
                 $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
 
                 // Determine color based on level
                 var color;
-                if (level < 0.40 * maxHeight) { // Assume level <= 10 is safe
+                if (level < 0.40 * maxLevel) { // Assume level <= 10 is safe
                     color = 'green';
-                } else if (level < 0.60 * maxHeight) { // Assume level <= 30 is at risk
+                } else if (level < 0.60 * maxLevel) { // Assume level <= 30 is at risk
                     color = 'yellow';
-                } else if(level < 0.80 * maxHeight ){ // Anything else is dangerous
+                } else if(level < 0.80 * maxLevel ){ // Anything else is dangerous
                     color = 'red';
                 }
 
