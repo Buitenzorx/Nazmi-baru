@@ -67,7 +67,7 @@
                 </div>
             </div>
 
-            <!-- TDS Air -->
+            <!-- Kekeruhan Air -->
             <div class="col-md-3">
                 <div class="card mb-3" style="height: 150px;">
                     <div class="card-header"
@@ -108,29 +108,56 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Sumur (Well) Visualization -->
+
+
         </div>
 
-        <div class="row" style="margin-bottom:200px; margin-left:-50px">
+        <div class="row" style="margin-bottom: 200px; margin-left: -50px">
             <!-- Grafik -->
-            <div class="col-md-12">
+            <div class="col-md-9">
                 <div class="card">
                     <div class="card-header"
                         style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
                         <h3>Ketinggian Air Sumur</h3>
                     </div>
-
                     <div class="card-body">
                         <canvas id="waterLevelChart"></canvas>
                     </div>
-
                 </div>
-
             </div>
 
+            <!-- Water Well Animation -->
+            <div class="col-md-3">
+                <div id="well-container"
+                    style="width: 100%; height: 427px; border: 5px solid cornflowerblue; position: relative; background-color: rgb(255, 255, 255);">
+                    <!-- Water fill animation -->
+                    <div id="water"
+                        style="width: 100%; height: 0; background-color: cornflowerblue; position: absolute; bottom: 0; animation: wave 5s ease-in-out infinite;">
+                        <!-- Text elements for displaying jarak and ketinggian -->
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
+    <style>
+        @keyframes wave {
+            0% {
+                height: 65%;
+            }
 
+            50% {
+                height: 70%;
+            }
+
+            100% {
+                height: 65%;
+                /* Adjust to be 5% lower than 40% */
+            }
+        }
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -196,17 +223,12 @@
                         $("#STATUS-JARAK").text(data.status);
                         lastValue = data.level;
                         updateChart(data);
-                        updateWaterQuality(data.ph_air, data.kekeruhan_air);
+                        updateWaterLevelAnimation(84 - data
+                            .level); // Update the water level animation
+                        updateWaterQualityStatus(data.ph_air, data.kekeruhan_air);
                     }
                 });
             }, 1000);
-
-            // Function to calculate volume
-            function calculateVolume(height) {
-                var radius = 0.075; // 82.5 mm to meters
-                var volume = Math.PI * Math.pow(radius, 2) * height; // Volume in cubic meters
-                return (volume * 1000).toFixed(2); // Convert to liters and format
-            }
 
             // Function to update the chart
             function updateChart(data) {
@@ -230,21 +252,40 @@
                 waterLevelChart.update();
             }
 
-            // Function to update water quality status
-            // Update water quality data every second
-            setInterval(function() {
-                $.getJSON("/api/water-quality-data", function(data) {
-                    $("#ph_air").text(data.ph_air);
-                    $("#kekeruhan_air").text(data.kekeruhan_air);
-                    updateWaterQualityStatus(data.ph_air, data.kekeruhan_air);
-                });
-            }, 1000);
+            // Function to update the water level animation
+            function updateWaterLevelAnimation(level) {
+                var wellHeight = 8500; // Height of the well in pixels
+                var maxLevel = 84; // Max height level in meters
+                var waterHeight = (level / maxLevel) * wellHeight; // Calculate the water height based on the level
+                $("#water").css('height', waterHeight + 'px');
+                $("#water-level-value").text(level.toFixed(2)); // Update the ketinggian displayed inside the water
+                $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
+
+                // Determine color based on level
+                var color;
+                if (level < 0.40 * maxLevel) { // Assume level <= 10 is safe
+                    color = 'green';
+                } else if (level < 0.60 * maxLevel) { // Assume level <= 30 is at risk
+                    color = 'yellow';
+                } else if(level < 0.80 * maxLevel ){ // Anything else is dangerous
+                    color = 'red';
+                }
+
+                // Update the water color based on the status
+                $("#water").css('background-color', color);
+            }
+
+            // Function to calculate volume
+            function calculateVolume(height) {
+                var radius = 0.075; // 82.5 mm to meters
+                var volume = Math.PI * Math.pow(radius, 2) * height; // Volume in cubic meters
+                return (volume * 1000).toFixed(2); // Convert to liters and format
+            }
 
             // Function to update water quality status
             function updateWaterQualityStatus(ph_air, kekeruhan_air) {
                 let status = "Baik";
 
-                // Kondisi logika yang diperbaiki
                 if (ph_air >= 6.5 && ph_air <= 8.5 && kekeruhan_air <= 2) {
                     status = "Baik";
                 } else {
