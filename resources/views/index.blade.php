@@ -272,28 +272,32 @@
     
             // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
-                var wellHeight = 300; // Height of the well in pixels
-                var maxLevel = 84; // Max height level in meters
-                var waterHeight = ((84 - level) / maxLevel) * wellHeight; // Calculate the water height based on the level
-                $("#water").css('height', waterHeight + 'px');
-                $("#water-level-value").text((84 - level).toFixed(2)); // Update the ketinggian displayed inside the water
-                // $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
+    var maxDisplayLevel = 97; // Nilai maksimum yang akan ditampilkan
+    var displayLevel = level > maxDisplayLevel ? maxDisplayLevel : level;
+
+    var wellHeight = 300; // Height of the well in pixels
+    var maxLevel = 84; // Max height level in meters
+    var waterHeight = ((84 - displayLevel) / maxLevel) * wellHeight; // Calculate the water height based on the level
     
-                // Determine color based on level
-                var color;
-                if ((84 - level) <= 0.40 * maxLevel) { // Safe level
-                    color = 'green';
-                } else if ((84 - level) <= 0.60 * maxLevel) { // Warning level
-                    color = 'yellow';
-                } else if ((84 - level) <= 0.80 * maxLevel) { // Danger level
-                    color = 'orange';
-                } else { // Extreme danger level
-                    color = 'red';
-                }
-    
-                // Update the water color based on the status
-                $("#water").css('background-color', color);
-            }
+    $("#water").css('height', waterHeight + 'px');
+    $("#water-level-value").text(displayLevel.toFixed(2)); // Update the ketinggian displayed inside the water
+
+    // Determine color based on level
+    var color;
+    if ((84 - displayLevel) <= 0.40 * maxLevel) { // Safe level
+        color = 'green';
+    } else if ((84 - displayLevel) <= 0.60 * maxLevel) { // Warning level
+        color = 'yellow';
+    } else if ((84 - displayLevel) <= 0.80 * maxLevel) { // Danger level
+        color = 'orange';
+    } else { // Extreme danger level
+        color = 'red';
+    }
+
+    // Update the water color based on the status
+    $("#water").css('background-color', color);
+}
+
     
             // Function to calculate volume
             function calculateVolume(height) {
