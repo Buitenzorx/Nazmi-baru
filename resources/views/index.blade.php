@@ -268,7 +268,9 @@
                     color = 'green';
                 } else if (level <= 0.60 * maxLevel) { // Warning level
                     color = 'yellow';
-                } else { // Danger level
+                } else if (level <= 0.80 * maxLevel) { // Danger level
+                    color = 'red';
+                } else if { // Danger level
                     color = 'red';
                 }
 
