@@ -130,12 +130,18 @@
 
             <!-- Water Well Animation -->
             <div class="col-md-3">
-                <div id="well-container"
-                    style="width: 100%; height: 427px; border: 5px solid cornflowerblue; position: relative; background-color: rgb(255, 255, 255);">
-                    <!-- Water fill animation -->
-                    <div id="water"
-                        style="width: 100%; height: 0; background-color: cornflowerblue; position: absolute; bottom: 0; animation: wave 5s ease-in-out infinite;">
-                        <!-- Text elements for displaying jarak and ketinggian -->
+                <div class="card">
+                    <div class="card-header"
+                        style="font-size: 30px; font-weight: bold; background-color: cornflowerblue; color: white;">
+                        <h3>Status Sumur</h3>
+                    </div>
+                    <div id="well-container"
+                        style="width: 100%; height: 425px; border: 5px solid cornflowerblue; position: relative; background-color: rgb(255, 255, 255);">
+                        <!-- Water fill animation -->
+                        <div id="water"
+                            style="width: 100%; height: 0; background-color: cornflowerblue; position: absolute; bottom: 0; animation: wave 5s ease-in-out infinite;">
+                            <!-- Text elements for displaying jarak and ketinggian -->
+                        </div>
                     </div>
                 </div>
             </div>
