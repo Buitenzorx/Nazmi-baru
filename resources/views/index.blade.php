@@ -255,19 +255,19 @@
             // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
                 var wellHeight = 8500; // Height of the well in pixels
-                var maxLevel = 84; // Max height level in meters
-                var waterHeight = (level / maxLevel) * wellHeight; // Calculate the water height based on the level
+                var maxHeight = 84; // Max height level in meters
+                var waterHeight = (level / maxHeight) * wellHeight; // Calculate the water height based on the level
                 $("#water").css('height', waterHeight + 'px');
                 $("#water-level-value").text(level.toFixed(2)); // Update the ketinggian displayed inside the water
                 $("#distance-value").text((84 - level).toFixed(2)); // Update the jarak displayed above the water
 
                 // Determine color based on level
                 var color;
-                if ((84 - level) < 33.6) { // Assume level <= 10 is safe
+                if (level < 0.40 * maxHeight) { // Assume level <= 10 is safe
                     color = 'green';
-                } else if ((84 - level) < 50.4) { // Assume level <= 30 is at risk
+                } else if (level < 0.60 * maxHeight) { // Assume level <= 30 is at risk
                     color = 'yellow';
-                } else { // Anything else is dangerous
+                } else if(level < 0.80 * maxHeight ){ // Anything else is dangerous
                     color = 'red';
                 }
 
