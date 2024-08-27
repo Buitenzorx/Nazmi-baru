@@ -273,12 +273,12 @@
             // Function to update the water level animation
             function updateWaterLevelAnimation(level) {
     var maxDisplayLevel = 97; // Nilai maksimum yang akan ditampilkan
-    var displayLevel = level > maxDisplayLevel ? maxDisplayLevel : level;
+    var displayLevel = Math.min(level, maxDisplayLevel); // Batasi nilai ke maxDisplayLevel
 
     var wellHeight = 300; // Height of the well in pixels
     var maxLevel = 84; // Max height level in meters
     var waterHeight = ((84 - displayLevel) / maxLevel) * wellHeight; // Calculate the water height based on the level
-    
+
     $("#water").css('height', waterHeight + 'px');
     $("#water-level-value").text(displayLevel.toFixed(2)); // Update the ketinggian displayed inside the water
 
@@ -297,6 +297,7 @@
     // Update the water color based on the status
     $("#water").css('background-color', color);
 }
+
 
     
             // Function to calculate volume
